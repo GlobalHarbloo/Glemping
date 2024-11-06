@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Список стоянок</title>
+</head>
+<body>
+    <h1>Доступные стоянки</h1>
+
+    <form method="get">
+        <label for="start_date">Дата начала:</label>
+        <input type="date" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
+        
+        <label for="end_date">Дата окончания:</label>
+        <input type="date" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
+        
+        <button type="submit">Поиск</button>
+    </form>
+
+    {% for campsite in campsites %}
+        <div>
+            <h2>{{ campsite.name }}</h2>
+            <p>{{ campsite.description }}</p>
+            <p>Цена за ночь: {{ campsite.price_per_night }} руб.</p>
+            <p>Доступно с {{ campsite.availability_start }} по {{ campsite.availability_end }}</p>
+            <a href="{% url 'campsite_detail' campsite.id %}">Подробнее</a> |
+            <a href="{% url 'create_booking' campsite.id %}">Забронировать</a>
+        </div>
+    {% empty %}
+        <p>К сожалению, на выбранные даты нет доступных стоянок.</p>
+    {% endfor %}
+</body>
+</html>

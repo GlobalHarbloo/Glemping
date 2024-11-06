@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Бронирование</title>
+</head>
+<body>
+    <h1>Бронирование стоянки {{ campsite.name }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label>Имя:</label>
+        <input type="text" name="customer_name" required><br>
+        
+        <label>Email:</label>
+        <input type="email" name="customer_email" required><br>
+        
+        <label>Дата начала:</label>
+        <input type="date" name="start_date" required><br>
+        
+        <label>Дата окончания:</label>
+        <input type="date" name="end_date" required><br>
+        
+        <button type="submit">Забронировать</button>
+    </form>
+</body>
+</html>

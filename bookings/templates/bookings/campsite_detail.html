@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Детали стоянки</title>
+</head>
+<body>
+    <h1>{{ campsite.name }}</h1>
+    <p>{{ campsite.description }}</p>
+    <img src="{{ campsite.image.url }}" alt="{{ campsite.name }}" style="width:300px;">
+    <p>Доступные даты: {{ campsite.available_dates }}</p>
+    <a href="{% url 'create_booking' campsite.id %}">Забронировать</a>
+</body>
+</html>
