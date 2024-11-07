@@ -4,7 +4,7 @@ class Campsite(models.Model):
     name = models.CharField(max_length=100)  # Название стоянки
     description = models.TextField()         # Описание
     location = models.CharField(max_length=100)  # Местоположение
-    available_dates = models.JSONField()     # Список доступных дат
+
 
     def __str__(self):
         return self.name
@@ -17,7 +17,7 @@ class Booking(models.Model):
         ('confirmed', 'Подтверждено'),
     ]
     
-    campsite = models.ForeignKey(Campsite, on_delete=models.CASCADE)
+    campsite = models.ForeignKey(Campsite, on_delete=models.CASCADE, related_name='bookings')
     customer_name = models.CharField(max_length=100)
     customer_email = models.EmailField()
     start_date = models.DateField()
