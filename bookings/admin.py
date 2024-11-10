@@ -5,7 +5,7 @@ from .models import Campsite, Booking
 class BookingAdmin(admin.ModelAdmin):
     list_display = ('customer_name', 'campsite', 'start_date', 'end_date', 'status')  # отображаемые поля
     list_filter = ('status',)  # фильтрация по статусу
-    search_fields = ('customer_name', 'customer_email')  # поиск по имени и email
+    search_fields = ('customer_name', 'customer_email','customer_number')  # поиск по имени и email
 
 # Регистрация моделей в админке
 admin.site.register(Campsite)
