@@ -1,57 +1,80 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ campsite.name }} - Детали</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="{% static 'bookings/styles.css' %}">
-
 </head>
 <body>
-    <h1>{{ campsite.name }}</h1>
+    <header>
+        <h1>Глемпинг - {{ campsite.name }}</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'campsite_list' %}">Главная</a></li>
+                <li><a href="{% url 'about_us' %}">О нас</a></li>
+                <li><a href="{% url 'contact' %}">Контакты</a></li>
+                <li><a href="{% url 'services' %}">Услуги</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <!-- Основное изображение -->
-    <section class="campsite-main-image">
-        {% if campsite.image %}
-            <img src="{{ campsite.image.url }}" alt="{{ campsite.name }} image" style="max-width:100%;">
-        {% else %}
-            <p>Основное изображение не доступно.</p>
-        {% endif %}
-    </section>
+    <main>
+        <div class="campsite-details">
+            <h1>{{ campsite.name }}</h1>
 
-    <!-- Описание стоянки -->
-    <p>{{ campsite.description }}</p>
+            <!-- Основное изображение -->
+            <section class="campsite-main-image">
+                {% if campsite.image %}
+                    <img src="{{ campsite.image.url }}" alt="{{ campsite.name }} image" style="max-width:100%;">
+                {% else %}
+                    <p>Основное изображение не доступно.</p>
+                {% endif %}
+            </section>
 
-    <!-- Галерея дополнительных изображений -->
-    <div class="gallery">
-        <h2>Галерея изображений</h2>
-        {% for image in campsite.images.all %}
-            <img src="{{ image.image.url }}" alt="Фото {{ forloop.counter }}" style="max-width:30%; margin:10px;">
-        {% endfor %}
-    </div>
-    <h1>Создать бронирование для {{ campsite.name }}</h1>
-    <div id="message"></div>
-    <form id="bookingForm">
-        {% csrf_token %}
-        <label for="customer_name">Имя:</label>
-        <input type="text" id="customer_name" name="customer_name" required><br>
+            <!-- Описание стоянки -->
+            <div class="description">
+                <p>{{ campsite.description }}</p>
+            </div>
 
-        <label for="customer_email">Email:</label>
-        <input type="email" id="customer_email" name="customer_email" required><br>
+            <!-- Галерея дополнительных изображений -->
+            <div class="gallery">
+                {% for image in campsite.images.all %}
+                    <img src="{{ image.image.url }}" alt="Фото {{ forloop.counter }}">
+                {% endfor %}
+            </div>
 
-        <label for="customer_number">Номер телефона:</label>
-        <input type="text" id="customer_number" name="customer_number" required><br>
+            <!-- Форма бронирования -->
+            <h2>Создать бронирование для {{ campsite.name }}</h2>
+            <div id="message"></div>
+            <form id="bookingForm" class="booking-form">
+                {% csrf_token %}
+                <label for="customer_name">Имя:</label>
+                <input type="text" id="customer_name" name="customer_name" required><br>
 
-        <label for="start_date">Дата начала:</label>
-        <input type="date" id="start_date" name="start_date" required><br>
+                <label for="customer_email">Email:</label>
+                <input type="email" id="customer_email" name="customer_email" required><br>
 
-        <label for="end_date">Дата окончания:</label>
-        <input type="date" id="end_date" name="end_date" required><br>
+                <label for="customer_number">Номер телефона:</label>
+                <input type="text" id="customer_number" name="customer_number" required><br>
 
-        <button type="submit">Забронировать</button>
-    </form>
+                <label for="start_date">Дата начала:</label>
+                <input type="date" id="start_date" name="start_date" required><br>
+
+                <label for="end_date">Дата окончания:</label>
+                <input type="date" id="end_date" name="end_date" required><br>
+
+                <button type="submit">Забронировать</button>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Глемпинг</p>
+    </footer>
 
     <script>
         $(document).ready(function() {
@@ -64,16 +87,15 @@
                     type: "POST",
                     data: formData,
                     success: function(response) {
-                        $('#message').html('<p style="color: green;">' + response.message + '</p>');
+                        $('#message').html('<p class="success">' + response.message + '</p>');
                         $('#bookingForm')[0].reset();  // Сбрасываем форму после успешного бронирования
                     },
                     error: function(response) {
-                        $('#message').html('<p style="color: red;">' + response.responseJSON.error + '</p>');
+                        $('#message').html('<p class="error">' + response.responseJSON.error + '</p>');
                     }
                 });
             });
         });
     </script>
-    </body>
+</body>
 </html>
-

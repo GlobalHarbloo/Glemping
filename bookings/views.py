@@ -104,4 +104,14 @@ def campsite_data(request):
 
 def campsite_detail(request, campsite_id):
     campsite = get_object_or_404(Campsite, id=campsite_id)
-    return render(request, 'bookings/campsite_detail.html', {'campsite': campsite})
+    return render(request, 'bookings/campsite_detail.html', {'campsite': campsite})\
+
+def about_us(request):
+    return render(request, 'about_us.html')
+
+def contact(request):
+    return render(request, 'contact.html')  
+
+
+def services(request):
+    return render(request, 'services.html')

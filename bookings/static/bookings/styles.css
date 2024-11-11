@@ -189,6 +189,61 @@ main {
 }
 
 /* Стиль для страницы с деталями стоянки */
+/* Основные настройки */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', Courier, monospace;
+    color: #2c2c2c;
+    background-color: #f4efe6;
+}
+
+/* Заголовок и меню */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #d2c7b6;
+    border-bottom: 2px solid #a6927d;
+}
+
+header h1 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #3c3c3c;
+}
+
+header nav ul {
+    display: flex;
+    list-style-type: none;
+}
+
+header nav ul li {
+    margin: 0 15px;
+}
+
+header nav ul li a {
+    color: #3c3c3c;
+    text-decoration: none;
+    font-size: 18px;
+    transition: color 0.3s;
+}
+
+header nav ul li a:hover {
+    color: #a6927d;
+}
+
+/* Основной контент */
+main {
+    padding: 20px;
+}
+
+/* Стиль для страницы с деталями стоянки */
 .campsite-details h1 {
     font-size: 32px;
     color: #3c3c3c;
@@ -214,13 +269,16 @@ main {
 /* Галерея изображений */
 .gallery {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;  /* Обеспечивает один ряд */
     gap: 10px;
     margin-bottom: 30px;
+    overflow-x: auto;  /* Включает горизонтальную прокрутку */
+    padding-bottom: 10px; /* Немного отступа внизу, чтобы прокрутка не "прилипала" */
 }
 
 .gallery img {
-    width: 30%;
+    width: auto;
+    max-height: 200px; /* Ограничивает высоту изображений, чтобы они не были слишком большими */
     border-radius: 8px;
     transition: transform 0.3s;
 }
@@ -307,4 +365,3 @@ footer {
     margin-top: 20px;
     border-top: 2px solid #a6927d;
 }
-
