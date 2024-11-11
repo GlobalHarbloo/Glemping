@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Campsite, Booking
+from .models import Campsite, Booking, CampsiteImage
 
 # Класс для отображения модели Booking в админке
 class BookingAdmin(admin.ModelAdmin):
@@ -7,6 +7,15 @@ class BookingAdmin(admin.ModelAdmin):
     list_filter = ('status',)  # фильтрация по статусу
     search_fields = ('customer_name', 'customer_email','customer_number')  # поиск по имени и email
 
-# Регистрация моделей в админке
-admin.site.register(Campsite)
+# Регистрация модели Booking в админке
 admin.site.register(Booking, BookingAdmin)
+
+class CampsiteImageInline(admin.TabularInline):
+    model = CampsiteImage
+    extra = 1  # Количество пустых полей для добавления изображений
+
+class CampsiteAdmin(admin.ModelAdmin):
+    inlines = [CampsiteImageInline]
+
+# Регистрация модели Campsite в админке с добавлением инлайнов
+admin.site.register(Campsite, CampsiteAdmin)

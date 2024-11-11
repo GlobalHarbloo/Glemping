@@ -1,33 +1,63 @@
+
+
+{% load static %}
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Список стоянок</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camping Reservation</title>
+    <link rel="stylesheet" href="{% static 'bookings/styles.css' %}">
 </head>
 <body>
-    <h1>Доступные стоянки</h1>
+    <!-- Верхняя часть сайта -->
+    <header>
+        <h1>Серфтсанция Волго</h1>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Map</a></li>
+                <li><a href="#">Campsites</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <form method="get">
-        <label for="start_date">Дата начала:</label>
-        <input type="date" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
-        
-        <label for="end_date">Дата окончания:</label>
-        <input type="date" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
-        
-        <button type="submit">Поиск</button>
-    </form>
+    <!-- Основной контент -->
+    <main>
+        <!-- Раздел карты -->
+        <section class="map-section">
+            <h2>Карта нашего лагеря</h2>
+            <div class="map-container">
+                <img src="{% static 'images/camp-map.jpg' %}" alt="Campsite Map" class="camp-map">
+                <!-- Пример меток на карте -->
+                <div class="map-marker" style="top: 30%; left: 50%;">1</div>
+                <div class="map-marker" style="top: 60%; left: 30%;">2</div>
+            </div>
+        </section>
 
-    {% for campsite in campsites %}
-        <div>
-            <h2>{{ campsite.name }}</h2>
-            <p>{{ campsite.description }}</p>
-            <p>Цена за ночь: {{ campsite.price_per_night }} руб.</p>
-            <p>Доступно с {{ campsite.availability_start }} по {{ campsite.availability_end }}</p>
-            <a href="{% url 'campsite_detail' campsite.id %}">Подробнее</a> |
-            <a href="{% url 'create_booking' campsite.id %}">Забронировать</a>
-        </div>
-    {% empty %}
-        <p>К сожалению, на выбранные даты нет доступных стоянок.</p>
-    {% endfor %}
+        <!-- Раздел карточек кемпинга -->
+        <section class="campsite-cards">
+            {% for campsite in campsites %}
+                <div class="card">
+                    <h3>{{ campsite.name }}</h3>
+                    <a href="{% url 'campsite_detail' campsite.id %}">
+                        {% if campsite.image %}
+                            <img src="{{ campsite.image.url }}" alt="{{ campsite.name }}" style="max-width:100%;">
+                        {% else %}
+                            <img src="{% static 'images/default-image.jpg' %}" alt="Default image" style="max-width:100%;">
+                        {% endif %}
+                    </a>
+                    <p>{{ campsite.description|truncatewords:20 }}</p>
+                </div>
+            {% endfor %}
+        </section>
+    </main>
+
+    <!-- Подвал сайта -->
+    <footer>
+        <p>© 2024 Camping Reservation Website</p>
+    </footer>
 </body>
 </html>
+
