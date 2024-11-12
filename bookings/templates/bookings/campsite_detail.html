@@ -11,7 +11,7 @@
 </head>
 <body>
     <header>
-        <h1>Глемпинг - {{ campsite.name }}</h1>
+        <h1><a href="{% url 'campsite_list' %}">Серфстанция Волго</a></h1>
         <nav>
             <ul>
                 <li><a href="{% url 'campsite_list' %}">Главная</a></li>
@@ -48,7 +48,7 @@
             </div>
 
             <!-- Форма бронирования -->
-            <h2>Создать бронирование для {{ campsite.name }}</h2>
+            <h2>Забронировать стоянку {{ campsite.name }}</h2>
             <div id="message"></div>
             <form id="bookingForm" class="booking-form">
                 {% csrf_token %}

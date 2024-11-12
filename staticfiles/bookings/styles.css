@@ -213,11 +213,12 @@ header {
 }
 
 header h1 {
-    font-size: 28px;
+    font-size: 2vw;  /* Используем vw для адаптивного размера */
     font-weight: bold;
     color: #3c3c3c;
 }
 
+/* Навигационное меню */
 header nav ul {
     display: flex;
     list-style-type: none;
@@ -230,7 +231,7 @@ header nav ul li {
 header nav ul li a {
     color: #3c3c3c;
     text-decoration: none;
-    font-size: 18px;
+    font-size: 1.5vw;  /* Размер шрифта будет зависеть от ширины экрана */
     transition: color 0.3s;
 }
 
@@ -245,7 +246,8 @@ main {
 
 /* Стиль для страницы с деталями стоянки */
 .campsite-details h1 {
-    font-size: 32px;
+    text-align: center;
+    font-size: 2.5vw;  /* Сделаем размер адаптивным */
     color: #3c3c3c;
     margin-bottom: 20px;
 }
@@ -258,8 +260,13 @@ main {
 }
 
 /* Основное изображение */
+.campsite-main-image {
+    text-align: center; /* Выравнивает содержимое внутри блока по центру */
+    margin-bottom: 20px;
+}
+
 .campsite-main-image img {
-    width: 100%;
+    width: 70%;
     max-width: 800px;
     height: auto;
     border-radius: 10px;
@@ -299,6 +306,7 @@ main {
 }
 
 .booking-form h2 {
+    text-align: center;
     font-size: 24px;
     color: #3c3c3c;
     margin-bottom: 20px;
@@ -364,4 +372,55 @@ footer {
     color: #3c3c3c;
     margin-top: 20px;
     border-top: 2px solid #a6927d;
+}
+
+/* Медиазапросы для адаптивности */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 4vw;  /* Уменьшаем шрифт на планшетах */
+    }
+
+    header nav ul li a {
+        font-size: 3vw;  /* Уменьшаем шрифт меню */
+    }
+
+    .campsite-details h1 {
+        font-size: 4vw;  /* Размер заголовка тоже уменьшается */
+    }
+
+    .booking-form h2 {
+        font-size: 5vw;  /* Уменьшаем размер заголовка формы */
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 5vw;  /* Уменьшаем шрифт заголовка */
+    }
+
+    header nav ul li a {
+        font-size: 4vw;  /* Еще меньше для меню */
+    }
+
+    .campsite-details h1 {
+        font-size: 6vw;  /* Уменьшаем размер заголовка */
+    }
+
+    .booking-form h2 {
+        font-size: 7.5vw;  /* Заголовок формы еще меньше */
+    }
+
+    .booking-form label {
+        font-size: 4vw;  /* Уменьшаем размер шрифта в форме */
+    }
+
+    .booking-form input[type="text"],
+    .booking-form input[type="email"],
+    .booking-form input[type="date"] {
+        font-size: 4vw;  /* Уменьшаем размер текста в полях формы */
+    }
+
+    .booking-form button {
+        font-size: 5.5vw;  /* Уменьшаем размер текста на кнопке */
+    }
 }
