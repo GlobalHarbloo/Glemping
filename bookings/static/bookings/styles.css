@@ -134,7 +134,6 @@ footer {
 }
 
 /* Стили для страницы деталей о стоянках */
-/* Основные настройки */
 * {
     margin: 0;
     padding: 0;
@@ -189,7 +188,6 @@ main {
 }
 
 /* Стиль для страницы с деталями стоянки */
-/* Основные настройки */
 * {
     margin: 0;
     padding: 0;
@@ -231,7 +229,7 @@ header nav ul li {
 header nav ul li a {
     color: #3c3c3c;
     text-decoration: none;
-    font-size: 1.5vw;  /* Размер шрифта будет зависеть от ширины экрана */
+    font-size: 1.5vw;  
     transition: color 0.3s;
 }
 
@@ -247,7 +245,7 @@ main {
 /* Стиль для страницы с деталями стоянки */
 .campsite-details h1 {
     text-align: center;
-    font-size: 2.5vw;  /* Сделаем размер адаптивным */
+    font-size: 2.5vw;  
     color: #3c3c3c;
     margin-bottom: 20px;
 }
@@ -261,12 +259,12 @@ main {
 
 /* Основное изображение */
 .campsite-main-image {
-    text-align: center; /* Выравнивает содержимое внутри блока по центру */
+    text-align: center; 
     margin-bottom: 20px;
 }
 
 .campsite-main-image img {
-    width: 70%;
+    width: 80%;
     max-width: 800px;
     height: auto;
     border-radius: 10px;
@@ -279,13 +277,13 @@ main {
     flex-wrap: nowrap;  /* Обеспечивает один ряд */
     gap: 10px;
     margin-bottom: 30px;
-    overflow-x: auto;  /* Включает горизонтальную прокрутку */
-    padding-bottom: 10px; /* Немного отступа внизу, чтобы прокрутка не "прилипала" */
+    overflow-x: auto; 
+    padding-bottom: 10px;
 }
 
 .gallery img {
     width: auto;
-    max-height: 200px; /* Ограничивает высоту изображений, чтобы они не были слишком большими */
+    max-height: 200px; 
     border-radius: 8px;
     transition: transform 0.3s;
 }
@@ -374,6 +372,8 @@ footer {
     border-top: 2px solid #a6927d;
 }
 
+
+
 /* Медиазапросы для адаптивности */
 @media (max-width: 768px) {
     header h1 {
@@ -422,5 +422,104 @@ footer {
 
     .booking-form button {
         font-size: 5.5vw;  /* Уменьшаем размер текста на кнопке */
+    }
+}
+
+/* Стили для календаря */
+.page-content {
+    display: flex; 
+    height: calc(100vh - 60px); 
+    padding: 20px;
+}
+
+/* Контейнер с календарем */
+.calendar-container {
+    position: fixed; 
+    top: 200px; 
+    left: 0;
+    width: 300px; 
+    background-color: #f4efe6;
+    padding: 20px;
+    z-index: 1; 
+    margin-bottom: 300px
+}
+
+/* Стили для правой части страницы (основного контента) */
+.right-content {
+    margin-left: 300px; /* Отступ для правой части от календаря */
+    padding: 20px;
+    width: calc(100% - 270px); /* Оставшееся пространство для контента, учитывая ширину календаря */
+}
+
+/* Стили для календаря */
+table.calendar {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table.calendar th, table.calendar td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ccc;
+}
+
+table.calendar th {
+    background-color: #f4f4f4;
+}
+
+table.calendar td {
+    background-color: #ffffff;
+}
+
+table.calendar td.booked {
+    background-color: #f5a623;
+    color: #fff;
+}
+
+table.calendar td.available {
+    background-color: #4CAF50;
+    color: #fff;
+}
+
+table.calendar td:hover {
+    background-color: #e2e2e2;
+}
+
+/* Адаптивность для мобильных устройств */
+/* Адаптивность для мобильных устройств */
+@media screen and (max-width: 768px) {
+    /* Убираем разделение на правую и левую части */
+    .page-content {
+        flex-direction: column; /* Элементы располагаются друг под другом */
+    }
+
+    .calendar-container {
+        position: static; /* Календарь становится относительным и не перекрывает контент */
+        width: 100%; /* Ширина календаря на всю ширину экрана */
+        height: auto; /* Высота будет по содержимому */
+        margin-bottom: 20px; /* Отступ снизу */
+        border-right: none; /* Убираем правую границу, если есть */
+        z-index: 0; 
+    }
+
+    /* Основной контент */
+    .right-content {
+        margin-left: 0; /* Убираем отступ слева, так как календарь будет сверху */
+        padding: 10px; /* Уменьшаем отступы для мобильных устройств */
+        width: 100%; /* Ширина контента на всю ширину экрана */
+    }
+
+    .gallery img {
+        max-width: 100%; /* Изображения занимают всю ширину родительского блока */
+        height: auto; /* Высота подстраивается пропорционально ширине */
+    }
+
+    /* Кнопки и поля формы на всю ширину */
+    .booking-form input[type="text"],
+    .booking-form input[type="email"],
+    .booking-form input[type="date"],
+    .booking-form button {
+        width: 100%; /* Поля и кнопки занимают всю ширину */
+        font-size: 4vw; /* Текст кнопок адаптируется под экран */
     }
 }

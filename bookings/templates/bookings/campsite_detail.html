@@ -24,9 +24,8 @@
 
     <main>
         <div class="campsite-details">
-            <h1>{{ campsite.name }}</h1>
-
-            <!-- Основное изображение -->
+            <h1>{{campsite.name}}</h1>
+            <div class="right-content">
             <section class="campsite-main-image">
                 {% if campsite.image %}
                     <img src="{{ campsite.image.url }}" alt="{{ campsite.name }} image" style="max-width:100%;">
@@ -46,7 +45,49 @@
                     <img src="{{ image.image.url }}" alt="Фото {{ forloop.counter }}">
                 {% endfor %}
             </div>
+            </div>
 
+            <div class="calendar-container">
+                     <!-- Календарь -->
+                 <h2>Календарь доступных дат</h2>
+                 <table class="calendar">
+                    <thead>
+                        <tr>
+                            <th>Пн</th>
+                            <th>Вт</th>
+                            <th>Ср</th>
+                            <th>Чт</th>
+                            <th>Пт</th>
+                            <th>Сб</th>
+                            <th>Вс</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for week in month_days_all %}
+                            <tr>
+                                {% for day in week %}
+                                    {% if day %}
+                                    <td class="{% if day in booked_dates %}booked{% else %}available{% endif %}">
+                                        <span class="day-number">{{ day|slice:"8:10" }}</span>
+                                    </td>
+                                    {% else %}
+                                        <td></td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <script>
+                    const dayNumber = fullDate.slice(8, 10);
+                </script>
+
+                
+                </div>
+
+            
+            <div class="right-content">
             <!-- Форма бронирования -->
             <h2>Забронировать стоянку {{ campsite.name }}</h2>
             <div id="message"></div>
@@ -67,8 +108,17 @@
                 <label for="end_date">Дата окончания:</label>
                 <input type="date" id="end_date" name="end_date" required><br>
 
+                <label for="special_requests"> Комментарии </label>
+                <input type="text" id="special_requests" name="special_requests"><br>
+
+                <label>
+                <input type="checkbox" name="include_meals" value="1">
+                Включить питание
+                </label><br>
+
                 <button type="submit">Забронировать</button>
             </form>
+            </div>
         </div>
     </main>
 

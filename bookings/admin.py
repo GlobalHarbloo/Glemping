@@ -3,7 +3,10 @@ from .models import Campsite, Booking, CampsiteImage
 
 # Класс для отображения модели Booking в админке
 class BookingAdmin(admin.ModelAdmin):
-    list_display = ('customer_name', 'campsite', 'start_date', 'end_date', 'status')  # отображаемые поля
+    list_display = (
+        'campsite', 'customer_name', 'start_date', 'end_date', 'status', 
+        'special_requests', 'include_meals'
+    ) # отображаемые поля
     list_filter = ('status',)  # фильтрация по статусу
     search_fields = ('customer_name', 'customer_email','customer_number')  # поиск по имени и email
 

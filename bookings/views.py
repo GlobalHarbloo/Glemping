@@ -8,6 +8,8 @@ from datetime import datetime
 from django.utils.dateparse import parse_date
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
+import calendar
+from datetime import date, timedelta
 
 def campsite_list(request):
     # Получаем даты из параметров запроса
@@ -39,11 +41,64 @@ def campsite_list(request):
     
     return render(request, 'bookings/campsite_list.html', {'campsites': available_campsites})
 
+import calendar
+from datetime import date, timedelta
+
+from datetime import datetime, timedelta
+from django.shortcuts import render, get_object_or_404
+from .models import Campsite, Booking
+import calendar
 
 def campsite_detail(request, campsite_id):
     """Подробная информация о стоянке, включая доступные даты."""
     campsite = get_object_or_404(Campsite, id=campsite_id)
-    return render(request, 'bookings/campsite_detail.html', {'campsite': campsite})
+
+    # Получаем бронирования для данной стоянки
+    bookings = Booking.objects.filter(campsite=campsite)
+
+    # Преобразуем все даты бронирований в список забронированных дат
+    booked_dates = [
+        (booking.start_date + timedelta(days=i)).isoformat()[:10]  # Получаем все дни между start_date и end_date
+        for booking in bookings
+        for i in range((booking.end_date - booking.start_date).days + 1)
+    ]
+    
+    # Отладка:
+    print("Забронированные даты:", booked_dates)
+
+    # Текущая дата
+    today = date.today()
+    year = today.year
+    month = today.month
+
+    # Получаем календарь для текущего месяца
+    cal = calendar.Calendar(firstweekday=6)  # Начинаем с воскресенья
+    month_days = cal.monthdayscalendar(year, month)
+
+    # Отладка:
+    print("Дни месяца:", month_days)
+
+    # Преобразуем список забронированных дат в set для быстрого поиска
+    booked_dates = set(booked_dates)
+
+    # Создаем список полных дат для каждого дня месяца
+    month_days_all = [
+        [(datetime(year, month, day).strftime('%Y-%m-%d') if day > 0 else 0) for day in week]
+        for week in month_days
+    ]
+
+    # Теперь передаем данные в шаблон
+    context = {
+        'campsite': campsite,
+        'booked_dates': booked_dates,  # Список занятых дат
+        'month_days': month_days,  # Список дней месяца (только числа)
+        'month_days_all': month_days_all,  # Список полных дат
+        'month': month,  # Текущий месяц
+        'year': year,  # Текущий год
+    }
+
+    return render(request, 'bookings/campsite_detail.html', context)
+
 
 
 @csrf_exempt
@@ -56,6 +111,11 @@ def create_booking(request, campsite_id):
         customer_name = request.POST.get('customer_name')
         customer_number = request.POST.get('customer_number')
         customer_email = request.POST.get('customer_email')
+        special_requests = request.POST.get('special_requests', '')
+        
+        # Поля для чекбоксов
+        include_meals = request.POST.get('include_meals') == 'on'
+
 
         # Проверка наличия данных
         if not (start_date_str and end_date_str and customer_name and customer_number and customer_email):
@@ -71,12 +131,14 @@ def create_booking(request, campsite_id):
             customer_number=customer_number,
             customer_email=customer_email,
             start_date=start_date,
-            end_date=end_date
+            end_date=end_date,
+            special_requests=special_requests,  # необязательное текстовое поле
+            include_meals=include_meals  
         )
 
         try:
             # Валидация перед сохранением
-            new_booking.clean()  # Вызываем метод clean для проверки пересечения дат
+            new_booking.clean()  #  проверка пересечения дат
             new_booking.save()  # Если всё хорошо, сохраняем бронирование
             return JsonResponse({"message": "Бронирование успешно создано!"})
         except ValidationError as e:
@@ -102,9 +164,6 @@ def campsite_data(request):
     
     return JsonResponse(data, safe=False)
 
-def campsite_detail(request, campsite_id):
-    campsite = get_object_or_404(Campsite, id=campsite_id)
-    return render(request, 'bookings/campsite_detail.html', {'campsite': campsite})\
 
 def about_us(request):
     return render(request, 'about_us.html')

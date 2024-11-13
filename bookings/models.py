@@ -43,6 +43,10 @@ class Booking(models.Model):
     end_date = models.DateField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
+    special_requests = models.TextField(blank=True, null=True)  # Поле для Комментариев
+    
+    include_meals = models.BooleanField(default=False)   # Чекбокс "Включить питание"
+
     def __str__(self):
         return f"Booking for {self.campsite.name} by {self.customer_name}"
 
