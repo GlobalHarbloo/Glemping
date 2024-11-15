@@ -49,8 +49,15 @@ from django.shortcuts import render, get_object_or_404
 from .models import Campsite, Booking
 import calendar
 
-def campsite_detail(request, campsite_id):
+def campsite_detail(request, campsite_id, year=None, month=None):
     """Подробная информация о стоянке, включая доступные даты."""
+
+    # Устанавливаем текущую дату, если год и месяц не переданы
+    today = date.today()
+    year = year or today.year
+    month = month or today.month
+
+    # Получаем информацию о стоянке
     campsite = get_object_or_404(Campsite, id=campsite_id)
 
     # Получаем бронирования для данной стоянки
@@ -58,43 +65,51 @@ def campsite_detail(request, campsite_id):
 
     # Преобразуем все даты бронирований в список забронированных дат
     booked_dates = [
-        (booking.start_date + timedelta(days=i)).isoformat()[:10]  # Получаем все дни между start_date и end_date
+        (booking.start_date + timedelta(days=i)).isoformat()[:10]
         for booking in bookings
         for i in range((booking.end_date - booking.start_date).days + 1)
     ]
-    
-    # Отладка:
-    print("Забронированные даты:", booked_dates)
+    booked_dates = set(booked_dates)  # Преобразуем в set для быстрого поиска
 
-    # Текущая дата
-    today = date.today()
-    year = today.year
-    month = today.month
-
-    # Получаем календарь для текущего месяца
+    # Генерация календаря для указанного месяца и года
     cal = calendar.Calendar(firstweekday=6)  # Начинаем с воскресенья
     month_days = cal.monthdayscalendar(year, month)
 
-    # Отладка:
-    print("Дни месяца:", month_days)
-
-    # Преобразуем список забронированных дат в set для быстрого поиска
-    booked_dates = set(booked_dates)
-
-    # Создаем список полных дат для каждого дня месяца
+    # Формируем полный список дат для месяца (YYYY-MM-DD или 0)
     month_days_all = [
         [(datetime(year, month, day).strftime('%Y-%m-%d') if day > 0 else 0) for day in week]
         for week in month_days
     ]
 
-    # Теперь передаем данные в шаблон
+    # Функция для вычисления нового года и месяца и получения названия месяца
+    def adjust_month(year, month, delta):
+        """Утилита для вычисления нового года и месяца при переходе на delta месяцев вперед или назад"""
+        new_month = (month - 1 + delta) % 12 + 1
+        new_year = year + (month - 1 + delta) // 12
+        return new_year, new_month, calendar.month_name[new_month]
+
+    # Вычисляем данные для кнопок навигации на два месяца назад и два месяца вперед
+    prev_month_1_year, prev_month_1, prev_month_1_name = adjust_month(year, month, -1)
+    prev_month_2_year, prev_month_2, prev_month_2_name = adjust_month(year, month, -2)
+    next_month_1_year, next_month_1, next_month_1_name = adjust_month(year, month, 1)
+    next_month_2_year, next_month_2, next_month_2_name = adjust_month(year, month, 2)
+
+    # Название текущего месяца
+    current_month_name = calendar.month_name[month]
+
+    # Передаем данные в шаблон
     context = {
         'campsite': campsite,
-        'booked_dates': booked_dates,  # Список занятых дат
-        'month_days': month_days,  # Список дней месяца (только числа)
-        'month_days_all': month_days_all,  # Список полных дат
-        'month': month,  # Текущий месяц
-        'year': year,  # Текущий год
+        'booked_dates': booked_dates,
+        'month_days': month_days,
+        'month_days_all': month_days_all,
+        'month': month,
+        'year': year,
+        'current_month_name': current_month_name,
+        'prev_month_1': {'year': prev_month_1_year, 'month': prev_month_1, 'name': prev_month_1_name},
+        'prev_month_2': {'year': prev_month_2_year, 'month': prev_month_2, 'name': prev_month_2_name},
+        'next_month_1': {'year': next_month_1_year, 'month': next_month_1, 'name': next_month_1_name},
+        'next_month_2': {'year': next_month_2_year, 'month': next_month_2, 'name': next_month_2_name},
     }
 
     return render(request, 'bookings/campsite_detail.html', context)

@@ -46,11 +46,25 @@
                 {% endfor %}
             </div>
             </div>
-
             <div class="calendar-container">
-                     <!-- Календарь -->
-                 <h2>Календарь доступных дат</h2>
-                 <table class="calendar">
+            <div class="calendar-navigation">
+                <!-- <a href="{% url 'campsite_detail' campsite.id prev_month_2.year prev_month_2.month %}">
+                    &laquo; {{ prev_month_2.name }} -->
+                </a>
+                <a href="{% url 'campsite_detail' campsite.id prev_month_1.year prev_month_1.month %}">
+                    &lsaquo; {{ prev_month_1.name }}
+                </a>
+                <span class="current-month">{{ current_month_name }} {{ year }}</span>
+                <a href="{% url 'campsite_detail' campsite.id next_month_1.year next_month_1.month %}">
+                    {{ next_month_1.name }} &rsaquo;
+                </a>
+                <!-- <a href="{% url 'campsite_detail' campsite.id next_month_2.year next_month_2.month %}">
+                    {{ next_month_2.name }} &raquo; -->
+                </a>
+            </div>
+                
+            
+                <table class="calendar">
                     <thead>
                         <tr>
                             <th>Пн</th>
@@ -67,9 +81,9 @@
                             <tr>
                                 {% for day in week %}
                                     {% if day %}
-                                    <td class="{% if day in booked_dates %}booked{% else %}available{% endif %}">
-                                        <span class="day-number">{{ day|slice:"8:10" }}</span>
-                                    </td>
+                                        <td class="{% if day in booked_dates %}booked{% else %}available{% endif %}">
+                                            <span class="day-number">{{ day|slice:"8:10" }}</span>
+                                        </td>
                                     {% else %}
                                         <td></td>
                                     {% endif %}
@@ -78,13 +92,8 @@
                         {% endfor %}
                     </tbody>
                 </table>
-
-                <script>
-                    const dayNumber = fullDate.slice(8, 10);
-                </script>
-
-                
-                </div>
+            </div>
+            
 
             
             <div class="right-content">

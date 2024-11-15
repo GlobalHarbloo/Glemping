@@ -11,6 +11,7 @@ urlpatterns = [
     path('about-us/', views.about_us, name='about_us'), 
     path('contact/', views.contact, name='contact'), 
     path('services/', views.services, name='services'), 
+    path('campsite/<int:campsite_id>/<int:year>/<int:month>/', views.campsite_detail, name='campsite_detail'),
 
 ]
 if settings.DEBUG:
