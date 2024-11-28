@@ -78,7 +78,7 @@ main {
     position: absolute;
     background-color: #ff6b6b;
     color: #fff;
-    border-radius: 50%;
+    border-radius: 80%;
     padding: 10px;
     font-weight: bold;
     cursor: pointer;
@@ -90,6 +90,15 @@ main {
 }
 
 /* Карточки кемпинга */
+
+.campsites-container {
+    display: flex;
+    flex-wrap: wrap; /* Переносить карточки на новую строку, если они не помещаются */
+    gap: 20px; /* Расстояние между карточками */
+    justify-content: center; /* Центрировать карточки */
+    padding: 20px;
+}
+
 .campsite-cards {
     display: flex;
     flex-wrap: wrap;
@@ -122,6 +131,7 @@ main {
     font-size: 14px;
     color: #3c3c3c;
 }
+
 
 /* Подвал сайта */
 footer {
@@ -586,3 +596,5 @@ table.calendar td:hover {
         font-size: 4vw;
     }
 }
+
+

@@ -12,9 +12,10 @@ urlpatterns = [
     path('contact/', views.contact, name='contact'), 
     path('services/', views.services, name='services'), 
     path('campsite/<int:campsite_id>/<int:year>/<int:month>/', views.campsite_detail, name='campsite_detail'),
+    path('filter-campsites/', views.filter_campsites, name='filter_campsites'),
 
 ]
+
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

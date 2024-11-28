@@ -11,21 +11,17 @@ from django.http import JsonResponse
 import calendar
 from datetime import date, timedelta
 
+def index(request):
+    campsites = Campsite.objects.all()
+    campsites_json = serialize('json', campsites)
+    return render(request, 'bookings/index.html', {'campsites': campsites, 'campsites_json': campsites_json})
+
+
 def campsite_list(request):
     # Получаем даты из параметров запроса
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
-    #start_date = None
-    #end_date = None
-    #if not start_date or not end_date:
-     #   return HttpResponseBadRequest("Пожалуйста, введите обе даты планируемого проживания")
-    
-    #if start_date > end_date:
-     #   return HttpResponseBadRequest("Начальная дата должна быть раньше или равна конечной дате.")
-    
-   # if start_date < datetime.now().date():
-    #    return HttpResponseBadRequest("Выбранная дата не может быть в прошлом.")
-    
+
     if start_date and end_date:
         start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
         end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
@@ -38,8 +34,23 @@ def campsite_list(request):
     else:
         # Если даты не указаны, выводим все стоянки
         available_campsites = Campsite.objects.all()
-    
-    return render(request, 'bookings/campsite_list.html', {'campsites': available_campsites})
+
+    # Собираем данные о забронированных датах для каждой стоянки
+    booked_dates_per_campsite = {}
+    for campsite in available_campsites:
+        booked_dates = [
+            booking.start_date.strftime('%Y-%m-%d') for booking in campsite.bookings.filter(status='confirmed')
+        ]
+        booked_dates_per_campsite[campsite.id] = booked_dates
+
+    # Передаем в контекст данные
+    return render(request, 'bookings/campsite_list.html', {
+        'campsites': available_campsites,
+        'booked_dates_per_campsite': booked_dates_per_campsite,
+        'current_month_name': datetime.now().strftime('%B'),
+        'year': datetime.now().year,
+        'month_days': get_month_days(datetime.now()),  # добавь функцию для отображения дней месяца
+    })
 
 import calendar
 from datetime import date, timedelta
@@ -189,3 +200,76 @@ def contact(request):
 
 def services(request):
     return render(request, 'services.html')
+
+def filter_campsites(request):
+    start_date = request.POST.get('start_date')
+    end_date = request.POST.get('end_date')
+
+    # Получаем доступные и занятые стоянки для выбранного периода
+    campsites = Campsite.objects.all()
+    available_campsites = []
+    booked_campsites = {}
+
+    for campsite in campsites:
+        bookings = Booking.objects.filter(
+            campsite=campsite,
+            end_date__gte=start_date,
+            start_date__lte=end_date
+        )
+
+        # Если есть бронирования, сохраняем занятые даты
+        if bookings.exists():
+            booked_dates = [booking.start_date for booking in bookings]
+            booked_campsites[campsite.name] = booked_dates
+        else:
+            available_campsites.append(campsite)
+
+    return JsonResponse({
+        'booked_campsites': booked_campsites,  # Забронированные даты для каждой стоянки
+        'available': [campsite.name for campsite in available_campsites],
+        'campsites': [
+            {
+                'name': campsite.name,
+                'image': campsite.image.url if campsite.image else '/static/images/default-image.jpg',
+                'description': campsite.description,
+            }
+            for campsite in available_campsites
+        ]
+    })
+
+def campsite_list(request):
+    campsites = Campsite.objects.all()
+
+    today = datetime.today()
+    year = today.year
+    month = today.month
+    cal = calendar.Calendar(firstweekday=6)
+
+    # Календарь текущего месяца
+    month_days = cal.monthdayscalendar(year, month)
+    month_days_all = [
+        [(datetime(year, month, day).strftime('%Y-%m-%d') if day > 0 else 0) for day in week]
+        for week in month_days
+    ]
+
+    # Занятые даты для всех стоянок
+    booked_dates_per_campsite = {
+        campsite.id: [
+            (booking.start_date + timedelta(days=i)).isoformat()
+            for booking in Booking.objects.filter(campsite=campsite)
+            for i in range((booking.end_date - booking.start_date).days + 1)
+        ]
+        for campsite in campsites
+    }
+
+    current_month_name = calendar.month_name[month]
+
+    return render(request, 'bookings/campsite_list.html', {
+        'campsites': campsites,
+        'month_days': month_days_all,
+        'booked_dates_per_campsite': booked_dates_per_campsite,
+        'year': year,
+        'month': month,
+        'current_month_name': current_month_name,
+    })
+

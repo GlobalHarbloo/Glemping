@@ -1,5 +1,3 @@
-
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -8,56 +6,197 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Camping Reservation</title>
     <link rel="stylesheet" href="{% static 'bookings/styles.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <!-- Верхняя часть сайта -->
     <header>
         <h1>Серфстанция Волго</h1>
         <nav>
             <ul>
-                <li><a href="#">Стоянки</a></li>
-                <li><a href="#">О нас</a></li>
-                <li><a href="#">Услуги</a></li>
-                <li><a href="#">Контакты</a></li>
+                <li><a href="{% url 'campsite_list' %}">Стоянки</a></li>
+                <li><a href="{% url 'about_us' %}">О нас</a></li>
+                <li><a href="{% url 'services' %}">Услуги</a></li>
+                <li><a href="{% url 'contact' %}">Контакты</a></li>
             </ul>
         </nav>
     </header>
 
-    <!-- Основной контент -->
     <main>
-        <!-- Раздел карты -->
+        <!-- Навигация календаря -->
+        <script>
+            const bookedDatesPerCampsite = {{ booked_dates_per_campsite|safe }};
+        </script>
+        
+        <div class="calendar-container">
+            <div class="calendar-navigation">
+                <a href="#" id="prev-month">&lsaquo; Предыдущий</a>
+                <span class="current-month">{{ current_month_name }} {{ year }}</span>
+                <a href="#" id="next-month">Следующий &rsaquo;</a>
+            </div>
+            <table class="calendar">
+                <thead>
+                    <tr>
+                        <th>Пн</th>
+                        <th>Вт</th>
+                        <th>Ср</th>
+                        <th>Чт</th>
+                        <th>Пт</th>
+                        <th>Сб</th>
+                        <th>Вс</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for week in month_days %}
+                        <tr>
+                            {% for day in week %}
+                                {% if day %}
+                                    <td class="available" data-date="{{ day }}">
+                                        <span class="day-number">{{ day|slice:"8:10" }}</span>
+                                    </td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
         <section class="map-section">
             <h2>Карта нашего лагеря</h2>
             <div class="map-container">
-                <img src="{% static 'media/camp-map.jpeg' %}" alt="Campsite Map" class="camp-map">
-                <!-- Пример меток на карте -->
-                <div class="map-marker" style="top: 30%; left: 50%;">1</div>
-                <div class="map-marker" style="top: 60%; left: 30%;">2</div>
+                <img src="{% static 'media/camp-map.jpeg' %}" alt="Campsite Map" class="camp-map" id="camp-map">
+                <!-- Маркеры стоянок на карте -->
+                {% for campsite in campsites %}
+                    <div class="map-marker"
+                        data-campsite-id="{{ campsite.id }}"
+                        data-top="{{ campsite.marker_latitude|floatformat:2 }}"
+                        data-left="{{ campsite.marker_longitude|floatformat:2 }}">
+                        {{ forloop.counter }}
+                    </div>
+                {% endfor %}
             </div>
         </section>
-        <!-- <h1>Нюся, как одни из самых любимых пидренышей (ну мы так надеемся), от наших горячих братских сердец хотим поздравить тебя с началом ещё одного прекрасного года. Побольше счастливых моментов в твоей жизни! Ярких и безбашенных тусовок с нами и ещё многоми хорошими людьми, чтобы любое твоё дело процветало!</h1> -->
-<h1>  </h1>
-        <h2>Стоянки</h2>
-        <section class="campsite-cards">
-            {% for campsite in campsites %}
-                <div class="card">
-                    <h3>{{ campsite.name }}</h3>
-                    <a href="{% url 'campsite_detail' campsite.id %}">
-                        {% if campsite.image %}
-                            <img src="{{ campsite.image.url }}" alt="{{ campsite.name }}" style="max-width:100%;">
-                        {% else %}
-                            <img src="{% static 'images/default-image.jpg' %}" alt="Default image" style="max-width:100%;">
-                        {% endif %}
+        
+        <!-- Форма выбора дат -->
+        <section class="calendar-section">
+            <h2>Выберите даты</h2>
+            <form id="dateFilterForm">
+                {% csrf_token %}
+                <label for="start_date">Дата начала:</label>
+                <input type="date" id="start_date" name="start_date" required>
+                <label for="end_date">Дата окончания:</label>
+                <input type="date" id="end_date" name="end_date" required>
+                <button type="submit">Показать доступные</button>
+            </form>
+        </section>
+
+        <!-- Список стоянок -->
+        <section id="campsite-list">
+            <h2>Стоянки</h2>
+            <div id="campsites" class="campsites-container">
+                {% for campsite in campsites %}
+                    <a href="{% url 'campsite_detail' campsite.id %}" class="card-link">
+                        <div class="card" data-name="{{ campsite.name }}">
+                            <h3 class="campsite-title">{{ campsite.name }}</h3>
+                            <img src="{{ campsite.image.url }}" alt="{{ campsite.name }}" class="campsite-image">
+                            <p class="campsite-description">{{ campsite.description|truncatewords:20 }}</p>
+                        </div>
                     </a>
-                    <p>{{ campsite.description|truncatewords:20 }}</p>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </section>
     </main>
 
     <footer>
         <p>© 2024 Camping Reservation Website</p>
     </footer>
+
+    <script>
+        $(document).ready(function () {
+            let selectedCampsiteId = null;
+    
+            // Клик по маркеру на карте
+            $('.map-marker').on('click', function () {
+                selectedCampsiteId = $(this).data('campsite-id');
+                updateCalendar();
+            });
+    
+            // Обновление календаря
+            function updateCalendar() {
+                if (!selectedCampsiteId) return;
+    
+                const bookedDates = bookedDatesPerCampsite[selectedCampsiteId] || [];
+                $('.calendar td').each(function () {
+                    const date = $(this).data('date');
+                    if (date) {
+                        if (bookedDates.includes(date)) {
+                            $(this).removeClass('available').addClass('booked');
+                        } else {
+                            $(this).removeClass('booked').addClass('available');
+                        }
+                    }
+                });
+            }
+    
+            // Пересчитываем координаты маркеров относительно размеров карты
+            const map = $('#camp-map');
+            const mapWidth = map.width();
+            const mapHeight = map.height();
+    
+            console.log("Map width:", mapWidth);
+            console.log("Map height:", mapHeight);
+    
+            $('.map-marker').each(function () {
+                const topPercent = $(this).data('top');
+                const leftPercent = $(this).data('left');
+    
+                // Убедимся, что топ и левые значения существуют
+                if (topPercent && leftPercent) {
+                    // Переводим проценты в пиксели (без масштабирования)
+                    const topPosition = (topPercent ) * mapHeight;
+                    const leftPosition = (leftPercent) * mapWidth;
+    
+                    // Устанавливаем позиции маркера
+                    $(this).css({
+                        top: topPosition + 'px',
+                        left: leftPosition + 'px',
+                    });
+    
+                    console.log(`Marker at top: ${topPosition}px, left: ${leftPosition}px`);
+                } else {
+                    console.log('Ошибка: не заданы координаты для маркера');
+                }
+            });
+    
+            // Перерасчет при изменении размера окна
+            $(window).resize(function () {
+                const newMapWidth = map.width();
+                const newMapHeight = map.height();
+    
+                if (newMapWidth !== mapWidth || newMapHeight !== mapHeight) {
+                    // Пересчитываем позиции маркеров, если размер карты изменился
+                    $('.map-marker').each(function () {
+                        const topPercent = $(this).data('top');
+                        const leftPercent = $(this).data('left');
+    
+                        if (topPercent && leftPercent) {
+                            const topPosition = (topPercent / 100) * newMapHeight;
+                            const leftPosition = (leftPercent / 100) * newMapWidth;
+    
+                            $(this).css({
+                                top: topPosition + 'px',
+                                left: leftPosition + 'px',
+                            });
+    
+                            console.log(`Marker (after resize) at top: ${topPosition}px, left: ${leftPosition}px`);
+                        }
+                    });
+                }
+            });
+        });
+    </script>   
+    
 </body>
 </html>
-
