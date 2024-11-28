@@ -201,41 +201,51 @@ def contact(request):
 def services(request):
     return render(request, 'services.html')
 
+@csrf_exempt  # Если используете стандартный CSRF-токен, удалите эту строку
 def filter_campsites(request):
-    start_date = request.POST.get('start_date')
-    end_date = request.POST.get('end_date')
+    if request.method == "POST":
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
 
-    # Получаем доступные и занятые стоянки для выбранного периода
-    campsites = Campsite.objects.all()
-    available_campsites = []
-    booked_campsites = {}
+        if not start_date or not end_date:
+            return JsonResponse({'error': 'Некорректные даты'}, status=400)
 
-    for campsite in campsites:
-        bookings = Booking.objects.filter(
-            campsite=campsite,
-            end_date__gte=start_date,
-            start_date__lte=end_date
-        )
+        campsites = Campsite.objects.all()
+        available_campsites = []
+        booked_campsites = {}
 
-        # Если есть бронирования, сохраняем занятые даты
-        if bookings.exists():
-            booked_dates = [booking.start_date for booking in bookings]
-            booked_campsites[campsite.name] = booked_dates
-        else:
-            available_campsites.append(campsite)
+        for campsite in campsites:
+            bookings = Booking.objects.filter(
+                campsite=campsite,
+                end_date__gte=start_date,
+                start_date__lte=end_date
+            )
 
-    return JsonResponse({
-        'booked_campsites': booked_campsites,  # Забронированные даты для каждой стоянки
-        'available': [campsite.name for campsite in available_campsites],
-        'campsites': [
-            {
-                'name': campsite.name,
-                'image': campsite.image.url if campsite.image else '/static/images/default-image.jpg',
-                'description': campsite.description,
-            }
-            for campsite in available_campsites
-        ]
-    })
+            if bookings.exists():
+                booked_dates = []
+                for booking in bookings:
+                    current = booking.start_date
+                    while current <= booking.end_date:
+                        booked_dates.append(current.strftime('%Y-%m-%d'))
+                        current += timedelta(days=1)
+                booked_campsites[campsite.name] = booked_dates
+            else:
+                available_campsites.append(campsite)
+
+        return JsonResponse({
+            'booked_campsites': booked_campsites,
+            'available': [
+                {
+                    'id': campsite.id,
+                    'name': campsite.name,
+                    'image': campsite.image.url if campsite.image else '/static/images/default-image.jpg',
+                    'description': campsite.description,
+                }
+                for campsite in available_campsites
+            ]
+        })
+
+    return JsonResponse({'error': 'Метод не поддерживается'}, status=405)
 
 def campsite_list(request):
     campsites = Campsite.objects.all()

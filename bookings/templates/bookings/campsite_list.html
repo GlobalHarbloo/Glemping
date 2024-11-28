@@ -192,6 +192,64 @@
     });
 });
 
+$(document).ready(function () {
+    // Обработка формы фильтрации
+    $('#dateFilterForm').on('submit', function (e) {
+        e.preventDefault(); // Отключаем стандартную отправку формы
+
+        const startDate = $('#start_date').val();
+        const endDate = $('#end_date').val();
+
+        if (!startDate || !endDate) {
+            alert('Пожалуйста, выберите даты.');
+            return;
+        }
+
+        // Отправляем AJAX-запрос на сервер
+        $.ajax({
+            url: '/filter-campsites/', // Укажите правильный URL для фильтрации
+            type: 'POST',
+            data: {
+                start_date: startDate,
+                end_date: endDate,
+                csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val() // CSRF-токен
+            },
+            success: function (response) {
+                updateCampsites(response.available); // Обновляем доступные стоянки
+                highlightBookedCampsites(response.booked_campsites); // Подсвечиваем занятые
+            },
+            error: function (error) {
+                console.error('Ошибка фильтрации:', error);
+                alert('Произошла ошибка. Попробуйте снова.');
+            }
+        });
+    });
+
+    // Обновляем список стоянок
+    function updateCampsites(availableCampsites) {
+        const campsitesContainer = $('#campsites');
+        campsitesContainer.empty(); // Очищаем контейнер
+
+        if (availableCampsites.length === 0) {
+            campsitesContainer.append('<p>Нет доступных стоянок на выбранные даты.</p>');
+            return;
+        }
+
+        // Добавляем доступные стоянки
+        availableCampsites.forEach(campsite => {
+            campsitesContainer.append(`
+                <a href="/campsite/${campsite.id}/" class="card-link">
+                    <div class="card">
+                        <h3 class="campsite-title">${campsite.name}</h3>
+                        <img src="${campsite.image}" alt="${campsite.name}" class="campsite-image">
+                        <p class="campsite-description">${campsite.description}</p>
+                    </div>
+                </a>
+            `);
+        });
+    }
+});
+
     </script>   
     
 </body>
