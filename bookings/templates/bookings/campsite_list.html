@@ -97,7 +97,7 @@
             <h2>Стоянки</h2>
             <div id="campsites" class="campsites-container">
                 {% for campsite in campsites %}
-                    <a href="{% url 'campsite_detail' campsite.id %}" class="card-link">
+                    <a href="{% url 'campsite_detail' campsite.id %}" class="card-link" id="campsite-card-{{ campsite.id }}">
                         <div class="card" data-name="{{ campsite.name }}">
                             <h3 class="campsite-title">{{ campsite.name }}</h3>
                             <img src="{{ campsite.image.url }}" alt="{{ campsite.name }}" class="campsite-image">
@@ -115,87 +115,83 @@
 
     <script>
         $(document).ready(function () {
-            let selectedCampsiteId = null;
-    
-            // Клик по маркеру на карте
-            $('.map-marker').on('click', function () {
-                selectedCampsiteId = $(this).data('campsite-id');
-                updateCalendar();
+    let selectedCampsiteId = null;
+
+    // Клик по маркеру на карте
+    $('.map-marker').on('click', function () {
+        selectedCampsiteId = $(this).data('campsite-id');
+        showCampsiteInfo(selectedCampsiteId);
+        updateCalendar();
+    });
+
+    // Показ информации о стоянке
+    function showCampsiteInfo(campsiteId) {
+        // Скрываем все карточки
+        $('.card-link').hide();
+
+        // Показываем карточку с соответствующим ID
+        $(`#campsite-card-${campsiteId}`).show();
+    }
+
+    // Обновление календаря
+    function updateCalendar() {
+        if (!selectedCampsiteId) return;
+
+        const bookedDates = bookedDatesPerCampsite[selectedCampsiteId] || [];
+        $('.calendar td').each(function () {
+            const date = $(this).data('date');
+            if (date) {
+                if (bookedDates.includes(date)) {
+                    $(this).removeClass('available').addClass('booked');
+                } else {
+                    $(this).removeClass('booked').addClass('available');
+                }
+            }
+        });
+    }
+
+    // Пересчитываем координаты маркеров относительно размеров карты
+    const map = $('#camp-map');
+    const mapWidth = map.width();
+    const mapHeight = map.height();
+
+    $('.map-marker').each(function () {
+        const topPercent = $(this).data('top');
+        const leftPercent = $(this).data('left');
+
+        if (topPercent && leftPercent) {
+            const topPosition = (topPercent) * mapHeight;
+            const leftPosition = (leftPercent) * mapWidth;
+
+            $(this).css({
+                top: topPosition + 'px',
+                left: leftPosition + 'px',
             });
-    
-            // Обновление календаря
-            function updateCalendar() {
-                if (!selectedCampsiteId) return;
-    
-                const bookedDates = bookedDatesPerCampsite[selectedCampsiteId] || [];
-                $('.calendar td').each(function () {
-                    const date = $(this).data('date');
-                    if (date) {
-                        if (bookedDates.includes(date)) {
-                            $(this).removeClass('available').addClass('booked');
-                        } else {
-                            $(this).removeClass('booked').addClass('available');
-                        }
-                    }
+        }
+    });
+
+    // Перерасчет при изменении размера окна
+    $(window).resize(function () {
+        const newMapWidth = map.width();
+        const newMapHeight = map.height();
+
+        $('.map-marker').each(function () {
+            const topPercent = $(this).data('top');
+            const leftPercent = $(this).data('left');
+
+            if (topPercent && leftPercent) {
+                const topPosition = (topPercent) * newMapHeight;
+                const leftPosition = (leftPercent) * newMapWidth;
+
+                $(this).css({
+                    top: topPosition + 'px',
+                    left: leftPosition + 'px',
                 });
             }
-    
-            // Пересчитываем координаты маркеров относительно размеров карты
-            const map = $('#camp-map');
-            const mapWidth = map.width();
-            const mapHeight = map.height();
-    
-            console.log("Map width:", mapWidth);
-            console.log("Map height:", mapHeight);
-    
-            $('.map-marker').each(function () {
-                const topPercent = $(this).data('top');
-                const leftPercent = $(this).data('left');
-    
-                // Убедимся, что топ и левые значения существуют
-                if (topPercent && leftPercent) {
-                    // Переводим проценты в пиксели (без масштабирования)
-                    const topPosition = (topPercent ) * mapHeight;
-                    const leftPosition = (leftPercent) * mapWidth;
-    
-                    // Устанавливаем позиции маркера
-                    $(this).css({
-                        top: topPosition + 'px',
-                        left: leftPosition + 'px',
-                    });
-    
-                    console.log(`Marker at top: ${topPosition}px, left: ${leftPosition}px`);
-                } else {
-                    console.log('Ошибка: не заданы координаты для маркера');
-                }
-            });
-    
-            // Перерасчет при изменении размера окна
-            $(window).resize(function () {
-                const newMapWidth = map.width();
-                const newMapHeight = map.height();
-    
-                if (newMapWidth !== mapWidth || newMapHeight !== mapHeight) {
-                    // Пересчитываем позиции маркеров, если размер карты изменился
-                    $('.map-marker').each(function () {
-                        const topPercent = $(this).data('top');
-                        const leftPercent = $(this).data('left');
-    
-                        if (topPercent && leftPercent) {
-                            const topPosition = (topPercent / 100) * newMapHeight;
-                            const leftPosition = (leftPercent / 100) * newMapWidth;
-    
-                            $(this).css({
-                                top: topPosition + 'px',
-                                left: leftPosition + 'px',
-                            });
-    
-                            console.log(`Marker (after resize) at top: ${topPosition}px, left: ${leftPosition}px`);
-                        }
-                    });
-                }
-            });
         });
+    });
+});
+
     </script>   
     
 </body>
