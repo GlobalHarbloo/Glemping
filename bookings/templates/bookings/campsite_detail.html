@@ -8,6 +8,171 @@
     <title>{{ campsite.name }} - Детали</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="{% static 'bookings/styles.css' %}">
+
+    <style>
+        .page-content {
+    display: flex;
+    height: calc(100vh - 60px);
+    padding: 20px;
+}
+
+/* Контейнер с календарем */
+.calendar-container {
+    position: fixed;
+    top: 100px;
+    left: 0;
+    width: 340px;
+    background-color: #f4efe6;
+    padding: 20px;
+    z-index: 1;
+    margin-bottom: 300px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); /* Легкая тень */
+    border-radius: 8px; /* Закругленные углы */
+}
+
+/* Стили для заголовка календаря */
+.calendar-container h2 {
+    font-size: 1.4em;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #333;
+}
+
+/* Стили для кнопок навигации */
+.calendar-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+/* Стили кнопок навигации */
+.calendar-navigation a {
+    text-decoration: none;
+    color: #ffffff;
+    background-color: #4CAF50;
+    padding: 8px 12px;
+    border-radius: 25px;
+    font-size: 1em;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15); /* Легкая тень */
+}
+
+.calendar-navigation a:hover {
+    background-color: #45a049;
+    transform: scale(1.05); /* Легкое увеличение при наведении */
+}
+
+.current-month {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #333;
+}
+/* Стили для таблицы календаря */
+table.calendar {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table.calendar th,
+table.calendar td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ccc;
+}
+
+table.calendar th {
+    background-color: #f4f4f4;
+    font-weight: 600;
+    color: #666;
+}
+
+table.calendar td {
+    background-color: #ffffff;
+    transition: background-color 0.3s;
+    font-size: 1em;
+}
+
+table.calendar td.booked {
+    background-color: #f5a623;
+    color: #fff;
+}
+
+table.calendar td.available {
+    background-color: #4CAF50;
+    color: #fff;
+}
+
+table.calendar td:hover {
+    background-color: #e2e2e2;
+    cursor: pointer;
+}
+
+/* Стили для чисел дней */
+.day-number {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+/* Правый контент */
+.right-content {
+    margin-left: 320px;
+    padding: 20px;
+    width: calc(100% - 320px);
+}
+
+/* Адаптивность для мобильных устройств */
+@media screen and (max-width: 768px) {
+    .page-content {
+        flex-direction: column;
+    }
+
+    .calendar-container {
+        position: static;
+        width: 100%;
+        height: auto;
+        margin-bottom: 20px;
+        z-index: 0;
+        box-shadow: none;
+    }
+
+    .right-content {
+        margin-left: 0;
+        padding: 10px;
+        width: 100%;
+    }
+
+    .calendar-container h2 {
+        font-size: 5vw;
+    }
+
+    .calendar-navigation a {
+        font-size: 4vw;
+        padding: 3px 6px;
+    }
+
+    table.calendar th,
+    table.calendar td {
+        font-size: 3vw;
+    }
+
+    .day-number {
+        font-size: 4vw;
+    }
+
+    .booking-form input[type="text"],
+    .booking-form input[type="email"],
+    .booking-form input[type="date"],
+    .booking-form button {
+        width: 100%;
+        font-size: 4vw;
+    }
+}
+
+
+
+    </style>
 </head>
 <body>
     <header>

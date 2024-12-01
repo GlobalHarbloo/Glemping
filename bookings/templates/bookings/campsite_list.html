@@ -7,6 +7,210 @@
     <title>Camping Reservation</title>
     <link rel="stylesheet" href="{% static 'bookings/styles.css' %}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Контейнер с календарем */
+        .calendar-container {
+            top: 100px;
+            left: 0;
+            width: 340px;
+            background-color: #f4efe6;
+            padding: 20px;
+            z-index: 1;
+            margin-bottom: 300px;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); /* Легкая тень */
+            border-radius: 8px; /* Закругленные углы */
+        }
+        
+        /* Стили для заголовка календаря */
+        .calendar-container h2 {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #333;
+        }
+        
+        /* Стили для кнопок навигации */
+        .calendar-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        /* Стили кнопок навигации */
+        .calendar-navigation a {
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #4CAF50;
+            padding: 8px 12px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15); /* Легкая тень */
+        }
+        
+        .calendar-navigation a:hover {
+            background-color: #45a049;
+            transform: scale(1.05); /* Легкое увеличение при наведении */
+        }
+        
+        .current-month {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+        }
+        /* Стили для таблицы календаря */
+        table.calendar {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        table.calendar th,
+        table.calendar td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+        
+        table.calendar th {
+            background-color: #f4f4f4;
+            font-weight: 600;
+            color: #666;
+        }
+        
+        table.calendar td {
+            background-color: #ffffff;
+            transition: background-color 0.3s;
+            font-size: 1em;
+        }
+        
+        table.calendar td.booked {
+            background-color: #f5a623;
+            color: #fff;
+        }
+        
+        table.calendar td.available {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+        
+        table.calendar td:hover {
+            background-color: #e2e2e2;
+            cursor: pointer;
+        }
+        
+        /* Стили для чисел дней */
+        .day-number {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        /* Правый контент */
+        .right-content {
+            margin-left: 320px;
+            padding: 20px;
+            width: calc(100% - 320px);
+        }
+        
+
+        /* Общий контейнер для карты и календаря */
+        .map-calendar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        /* Форма фильтра как строка */
+        .calendar-section form {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .calendar-section label {
+            font-size: 1em;
+            font-weight: 600;
+        }
+
+        .calendar-section input[type="date"],
+        .calendar-section button {
+            padding: 5px 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .calendar-section button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .calendar-section button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        /* Адаптивность для календаря и карты */
+        @media screen and (max-width: 768px) {
+            .map-calendar-container {
+                flex-direction: column;
+            }
+        }
+
+        
+        /* Адаптивность для календаря и карты */
+        @media screen and (max-width: 768px) {
+            .map-calendar-container {
+                flex-direction: column;
+            }
+        }
+        
+        
+        /* Адаптивность для мобильных устройств */
+        @media screen and (max-width: 768px) {
+            .page-content {
+                flex-direction: column;
+            }
+        
+            .calendar-container {
+                position: static;
+                width: 100%;
+                height: auto;
+                margin-bottom: 20px;
+                z-index: 0;
+                box-shadow: none;
+            }
+        
+            .right-content {
+                margin-left: 0;
+                padding: 10px;
+                width: 100%;
+            }
+        
+            .calendar-container h2 {
+                font-size: 5vw;
+            }
+        
+            .calendar-navigation a {
+                font-size: 4vw;
+                padding: 3px 6px;
+            }
+        
+            table.calendar th,
+            table.calendar td {
+                font-size: 3vw;
+            }
+        
+        .day-number {
+            font-size: 4vw;
+        }    
+    </style>
 </head>
 <body>
     <header>
@@ -22,11 +226,27 @@
     </header>
 
     <main>
-        <!-- Навигация календаря -->
         <script>
             const bookedDatesPerCampsite = {{ booked_dates_per_campsite|safe }};
         </script>
-        
+
+        <div class="map-calendar-container">
+        <section class="map-section">
+            <h2>Карта нашего лагеря</h2>
+            <div class="map-container">
+                <img src="{% static 'media/camp-map.jpeg' %}" alt="Campsite Map" class="camp-map" id="camp-map">
+                {% for campsite in campsites %}
+                    <div class="map-marker"
+                        data-campsite-id="{{ campsite.id }}"
+                        data-top="{{ campsite.marker_latitude|floatformat:2 }}"
+                        data-left="{{ campsite.marker_longitude|floatformat:2 }}">
+                        {{ forloop.counter }}
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Контейнер календаря -->
         <div class="calendar-container">
             <div class="calendar-navigation">
                 <a href="#" id="prev-month">&lsaquo; Предыдущий</a>
@@ -50,7 +270,7 @@
                         <tr>
                             {% for day in week %}
                                 {% if day %}
-                                    <td class="available" data-date="{{ day }}">
+                                    <td class="{% if day in booked_dates %}booked{% else %}available{% endif %}" data-date="{{ day }}">
                                         <span class="day-number">{{ day|slice:"8:10" }}</span>
                                     </td>
                                 {% else %}
@@ -62,37 +282,21 @@
                 </tbody>
             </table>
         </div>
+    </div>
 
-        <section class="map-section">
-            <h2>Карта нашего лагеря</h2>
-            <div class="map-container">
-                <img src="{% static 'media/camp-map.jpeg' %}" alt="Campsite Map" class="camp-map" id="camp-map">
-                <!-- Маркеры стоянок на карте -->
-                {% for campsite in campsites %}
-                    <div class="map-marker"
-                        data-campsite-id="{{ campsite.id }}"
-                        data-top="{{ campsite.marker_latitude|floatformat:2 }}"
-                        data-left="{{ campsite.marker_longitude|floatformat:2 }}">
-                        {{ forloop.counter }}
-                    </div>
-                {% endfor %}
-            </div>
-        </section>
-        
-        <!-- Форма выбора дат -->
-        <section class="calendar-section">
-            <h2>Выберите даты</h2>
-            <form id="dateFilterForm">
-                {% csrf_token %}
-                <label for="start_date">Дата начала:</label>
-                <input type="date" id="start_date" name="start_date" required>
-                <label for="end_date">Дата окончания:</label>
-                <input type="date" id="end_date" name="end_date" required>
-                <button type="submit">Показать доступные</button>
-            </form>
-        </section>
+    <!-- Форма фильтра -->
+    <section class="calendar-section">
+        <form id="dateFilterForm">
+            {% csrf_token %}
+            <label for="start_date">Дата начала:</label>
+            <input type="date" id="start_date" name="start_date" required>
+            <label for="end_date">Дата окончания:</label>
+            <input type="date" id="end_date" name="end_date" required>
+            <button type="submit">Показать доступные</button>
+        </form>
+        <button type="button" id="resetFilterButton">Сбросить фильтр</button>
+    </section>
 
-        <!-- Список стоянок -->
         <section id="campsite-list">
             <h2>Стоянки</h2>
             <div id="campsites" class="campsites-container">
@@ -115,142 +319,141 @@
 
     <script>
         $(document).ready(function () {
-    let selectedCampsiteId = null;
-
-    // Клик по маркеру на карте
-    $('.map-marker').on('click', function () {
-        selectedCampsiteId = $(this).data('campsite-id');
-        showCampsiteInfo(selectedCampsiteId);
-        updateCalendar();
-    });
-
-    // Показ информации о стоянке
-    function showCampsiteInfo(campsiteId) {
-        // Скрываем все карточки
-        $('.card-link').hide();
-
-        // Показываем карточку с соответствующим ID
-        $(`#campsite-card-${campsiteId}`).show();
-    }
-
-    // Обновление календаря
-    function updateCalendar() {
-        if (!selectedCampsiteId) return;
-
-        const bookedDates = bookedDatesPerCampsite[selectedCampsiteId] || [];
-        $('.calendar td').each(function () {
-            const date = $(this).data('date');
-            if (date) {
-                if (bookedDates.includes(date)) {
-                    $(this).removeClass('available').addClass('booked');
-                } else {
-                    $(this).removeClass('booked').addClass('available');
-                }
-            }
-        });
-    }
-
-    // Пересчитываем координаты маркеров относительно размеров карты
-    const map = $('#camp-map');
-    const mapWidth = map.width();
-    const mapHeight = map.height();
-
-    $('.map-marker').each(function () {
-        const topPercent = $(this).data('top');
-        const leftPercent = $(this).data('left');
-
-        if (topPercent && leftPercent) {
-            const topPosition = (topPercent) * mapHeight;
-            const leftPosition = (leftPercent) * mapWidth;
-
-            $(this).css({
-                top: topPosition + 'px',
-                left: leftPosition + 'px',
-            });
-        }
-    });
-
-    // Перерасчет при изменении размера окна
-    $(window).resize(function () {
-        const newMapWidth = map.width();
-        const newMapHeight = map.height();
-
-        $('.map-marker').each(function () {
-            const topPercent = $(this).data('top');
-            const leftPercent = $(this).data('left');
-
-            if (topPercent && leftPercent) {
-                const topPosition = (topPercent) * newMapHeight;
-                const leftPosition = (leftPercent) * newMapWidth;
-
-                $(this).css({
-                    top: topPosition + 'px',
-                    left: leftPosition + 'px',
+            let selectedCampsiteId = null;
+    
+            // Клик по маркеру на карте
+            function positionMarkers() {
+                const map = $('#camp-map');
+                const mapWidth = map.width();
+                const mapHeight = map.height();
+    
+                $('.map-marker').each(function () {
+                    const topPercent = parseFloat($(this).data('top'));
+                    const leftPercent = parseFloat($(this).data('left'));
+    
+                    if (!isNaN(topPercent) && !isNaN(leftPercent)) {
+                        const topPosition = topPercent * mapHeight;
+                        const leftPosition = leftPercent * mapWidth;
+    
+                        $(this).css({
+                            top: `${topPosition}px`,
+                            left: `${leftPosition}px`,
+                            position: 'absolute',
+                        }).show(); // Убедимся, что маркер видим
+                    } else {
+                        console.error(`Неверные данные для маркера: top=${topPercent}, left=${leftPercent}`);
+                    }
                 });
             }
-        });
-    });
-});
-
-$(document).ready(function () {
-    // Обработка формы фильтрации
-    $('#dateFilterForm').on('submit', function (e) {
-        e.preventDefault(); // Отключаем стандартную отправку формы
-
-        const startDate = $('#start_date').val();
-        const endDate = $('#end_date').val();
-
-        if (!startDate || !endDate) {
-            alert('Пожалуйста, выберите даты.');
-            return;
-        }
-
-        // Отправляем AJAX-запрос на сервер
-        $.ajax({
-            url: '/filter-campsites/', // Укажите правильный URL для фильтрации
-            type: 'POST',
-            data: {
-                start_date: startDate,
-                end_date: endDate,
-                csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val() // CSRF-токен
-            },
-            success: function (response) {
-                updateCampsites(response.available); // Обновляем доступные стоянки
-                highlightBookedCampsites(response.booked_campsites); // Подсвечиваем занятые
-            },
-            error: function (error) {
-                console.error('Ошибка фильтрации:', error);
-                alert('Произошла ошибка. Попробуйте снова.');
-            }
-        });
-    });
-
-    // Обновляем список стоянок
-    function updateCampsites(availableCampsites) {
-        const campsitesContainer = $('#campsites');
-        campsitesContainer.empty(); // Очищаем контейнер
-
-        if (availableCampsites.length === 0) {
-            campsitesContainer.append('<p>Нет доступных стоянок на выбранные даты.</p>');
-            return;
-        }
-
-        // Добавляем доступные стоянки
-        availableCampsites.forEach(campsite => {
-            campsitesContainer.append(`
-                <a href="/campsite/${campsite.id}/" class="card-link">
-                    <div class="card">
-                        <h3 class="campsite-title">${campsite.name}</h3>
-                        <img src="${campsite.image}" alt="${campsite.name}" class="campsite-image">
-                        <p class="campsite-description">${campsite.description}</p>
-                    </div>
-                </a>
-            `);
-        });
-    }
-});
-
-    </script>   
     
-</body>
+            // Вызываем функцию при загрузке страницы и изменении размеров окна
+            positionMarkers();
+            $(window).resize(positionMarkers);
+    
+            $('.map-marker').on('click', function () {
+                selectedCampsiteId = $(this).data('campsite-id');
+    
+                // Показываем информацию о выбранной стоянке
+                showCampsiteInfo(selectedCampsiteId);
+    
+                // Обновляем календарь
+                updateCalendar();
+            });
+    
+            // Показ информации о выбранной стоянке
+            function showCampsiteInfo(campsiteId) {
+                // Скрываем все карточки
+                $('.card-link').hide();
+    
+                // Показываем карточку с соответствующим ID
+                const campsiteCard = $(`#campsite-card-${campsiteId}`);
+                if (campsiteCard.length > 0) {
+                    campsiteCard.show();
+                } else {
+                    console.error(`Стоянка с ID "${campsiteId}" не найдена.`);
+                }
+            }
+    
+            // Обновление календаря для выбранной стоянки
+            function updateCalendar() {
+                if (!selectedCampsiteId) return;
+    
+                const bookedDates = bookedDatesPerCampsite[selectedCampsiteId] || [];
+                $('.calendar td').each(function () {
+                    const date = $(this).data('date');
+                    if (date) {
+                        if (bookedDates.includes(date)) {
+                            $(this).removeClass('available').addClass('booked');
+                        } else {
+                            $(this).removeClass('booked').addClass('available');
+                        }
+                    }
+                });
+            }
+    
+            // Обработка фильтрации стоянок
+            $('#dateFilterForm').on('submit', function (e) {
+                e.preventDefault();
+    
+                const startDate = $('#start_date').val();
+                const endDate = $('#end_date').val();
+    
+                if (!startDate || !endDate) {
+                    alert('Пожалуйста, выберите даты.');
+                    return;
+                }
+    
+                // Отправляем запрос на сервер
+                $.ajax({
+                    url: '/filter-campsites/', // Замените на реальный URL
+                    type: 'POST',
+                    data: {
+                        start_date: startDate,
+                        end_date: endDate,
+                        csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val()
+                    },
+                    success: function (response) {
+                        updateCampsites(response.available); // Обновляем список стоянок
+                    },
+                    error: function (error) {
+                        console.error('Ошибка фильтрации:', error);
+                        alert('Произошла ошибка. Попробуйте снова.');
+                    }
+                });
+            });
+    
+            // Обновление списка доступных стоянок после фильтрации
+            function updateCampsites(availableCampsites) {
+                const campsitesContainer = $('#campsites');
+                campsitesContainer.empty();
+    
+                if (availableCampsites.length === 0) {
+                    campsitesContainer.append('<p>Нет доступных стоянок на выбранные даты.</p>');
+                    return;
+                }
+    
+                availableCampsites.forEach(campsite => {
+                    campsitesContainer.append(
+                        `<a href="/campsite/${campsite.id}/" class="card-link" id="campsite-card-${campsite.id}">
+                            <div class="card">
+                                <h3 class="campsite-title">${campsite.name}</h3>
+                                <img src="${campsite.image}" alt="${campsite.name}" class="campsite-image">
+                                <p class="campsite-description">${campsite.description}</p>
+                            </div>
+                        </a>`
+                    );
+                });
+            }
+    
+            // Обработчик для сброса фильтра
+            $('#resetFilterButton').on('click', function (e) {
+                e.preventDefault(); // Предотвращаем стандартное поведение кнопки
+                $('#start_date').val(''); // Очистить поле начала
+                $('#end_date').val(''); // Очистить поле окончания
+                location.reload(); // Перезагружаем страницу, возвращая ее в первоначальное состояние
+            });
+        });
+    </script>
+    
+    </body>
 </html>
