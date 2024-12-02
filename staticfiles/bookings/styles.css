@@ -1,0 +1,309 @@
+/* Основные настройки */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', Courier, monospace;
+    color: #2c2c2c;
+    background-color: #f4efe6;
+}
+
+/* Заголовок и меню */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #d2c7b6;
+    border-bottom: 2px solid #a6927d;
+}
+
+header h1 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #3c3c3c;
+}
+
+header nav ul {
+    display: flex;
+    list-style-type: none;
+}
+
+header nav ul li {
+    margin: 0 15px;
+}
+
+header nav ul li a {
+    color: #3c3c3c;
+    text-decoration: none;
+    font-size: 18px;
+    transition: color 0.3s;
+}
+
+header nav ul li a:hover {
+    color: #a6927d;
+}
+
+/* Основной контент */
+main {
+    padding: 20px;
+}
+
+/* Раздел карты */
+.map-section h2 {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #3c3c3c;
+}
+
+.map-container {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+    border: 2px solid #a6927d;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.camp-map {
+    width: 100%;
+    display: block;
+}
+
+.map-marker {
+    position: absolute;
+    background-color: #ff6b6b;
+    color: #fff;
+    border-radius: 80%;
+    padding: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.map-marker:hover {
+    background-color: #ffa07a;
+}
+
+/* Карточки кемпинга */
+.campsites-container,
+.campsite-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+}
+
+.card {
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    padding: 20px;
+    width: 200px;
+    text-align: center;
+}
+
+.card img {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+}
+
+.card h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.card p {
+    font-size: 14px;
+    color: #3c3c3c;
+}
+
+/* Подвал сайта */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #d2c7b6;
+    color: #3c3c3c;
+    margin-top: 20px;
+    border-top: 2px solid #a6927d;
+}
+
+/* Стиль для страницы с деталями стоянки */
+.campsite-details h1 {
+    text-align: center;
+    font-size: 2.5vw;
+    color: #3c3c3c;
+    margin-bottom: 20px;
+}
+
+.campsite-details .description {
+    font-size: 16px;
+    color: #3c3c3c;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+/* Основное изображение */
+.campsite-main-image {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.campsite-main-image img {
+    width: 80%;
+    max-width: 800px;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+/* Галерея изображений */
+.gallery {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 10px;
+    margin-bottom: 30px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.gallery img {
+    width: auto;
+    max-height: 200px;
+    border-radius: 8px;
+    transition: transform 0.3s;
+}
+
+.gallery img:hover {
+    transform: scale(1.05);
+}
+
+/* Форма бронирования */
+.booking-form {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.booking-form h2 {
+    text-align: center;
+    font-size: 24px;
+    color: #3c3c3c;
+    margin-bottom: 20px;
+}
+
+.booking-form label {
+    font-size: 16px;
+    color: #3c3c3c;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.booking-form input[type="text"],
+.booking-form input[type="email"],
+.booking-form input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    border: 1px solid #a6927d;
+    border-radius: 8px;
+}
+
+.booking-form button {
+    background-color: #a6927d;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.booking-form button:hover {
+    background-color: #8c7a64;
+}
+
+/* Сообщения об ошибке и успехе */
+#message {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#message p {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#message p.error {
+    color: red;
+}
+
+#message p.success {
+    color: green;
+}
+
+/* Медиазапросы для адаптивности */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 4vw;  /* Уменьшаем шрифт на планшетах */
+    }
+
+    header nav ul li a {
+        font-size: 3vw;  /* Уменьшаем шрифт меню */
+    }
+
+    .campsite-details h1 {
+        font-size: 4vw;  /* Размер заголовка тоже уменьшается */
+    }
+
+    .booking-form h2 {
+        font-size: 5vw;  /* Уменьшаем размер заголовка формы */
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 5vw;  /* Уменьшаем шрифт заголовка */
+    }
+
+    header nav ul li a {
+        font-size: 4vw;  /* Еще меньше для меню */
+    }
+
+    .campsite-details h1 {
+        font-size: 6vw;  /* Уменьшаем размер заголовка */
+    }
+
+    .booking-form h2 {
+        font-size: 7.5vw;  /* Заголовок формы еще меньше */
+    }
+
+    .booking-form label {
+        font-size: 4vw;  /* Уменьшаем размер шрифта в форме */
+    }
+
+    .booking-form input[type="text"],
+    .booking-form input[type="email"],
+    .booking-form input[type="date"] {
+        font-size: 4vw;  /* Уменьшаем размер текста в полях формы */
+    }
+
+    .booking-form button {
+        font-size: 5.5vw;  /* Уменьшаем размер текста на кнопке */
+    }
+}
+

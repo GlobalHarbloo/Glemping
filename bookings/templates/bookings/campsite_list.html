@@ -1,0 +1,659 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camping Reservation</title>
+    <link rel="stylesheet" href="{% static 'bookings/styles.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* Контейнер с календарем */
+        .calendar-container {
+            top: 100px;
+            left: 0;
+            width: 340px;
+            background-color: #f4efe6;
+            padding: 20px;
+            z-index: 1;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1); /* Легкая тень */
+            border-radius: 8px; /* Закругленные углы */
+        }
+        
+        /* Стили для заголовка календаря */
+        .calendar-container h2 {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #333;
+        }
+        
+        /* Стили для кнопок навигации */
+        .calendar-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        /* Стили кнопок навигации */
+        .calendar-navigation a {
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #4CAF50;
+            padding: 8px 12px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15); /* Легкая тень */
+        }
+        
+        .calendar-navigation a:hover {
+            background-color: #45a049;
+            transform: scale(1.05); /* Легкое увеличение при наведении */
+        }
+        
+        .current-month {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+        }
+        /* Стили для таблицы календаря */
+        table.calendar {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        table.calendar th,
+        table.calendar td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+        
+        table.calendar th {
+            background-color: #f4f4f4;
+            font-weight: 600;
+            color: #666;
+        }
+        
+        table.calendar td {
+            background-color: #ffffff;
+            transition: background-color 0.3s;
+            font-size: 1em;
+        }
+        
+        table.calendar td.booked {
+            background-color: #f5a623;
+            color: #fff;
+        }
+        
+        table.calendar td.available {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+        
+        table.calendar td:hover {
+            background-color: #e2e2e2;
+            cursor: pointer;
+        }
+        
+        /* Стили для чисел дней */
+        .day-number {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        /* Правый контент */
+        .right-content {
+            margin-left: 320px;
+            padding: 20px;
+            width: calc(100% - 320px);
+        }
+        
+
+        /* Общий контейнер для карты и календаря */
+        .map-calendar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        /* Форма фильтра как строка */
+        .calendar-section form {
+            display: flex;
+            flex-wrap: wrap; /* Для адаптивности */
+            gap: 10px;
+            align-items: center;
+        }
+
+        .calendar-section .buttons-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .calendar-section button {
+            padding: 5px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .calendar-section button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+        .calendar-section input[type="date"] {
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .calendar-section input[type="date"]:focus {
+            border-color: #4CAF50;
+        }
+
+
+        /* Гамбургер-меню - видимо по умолчанию */
+        .hamburger-menu {
+        display: none;
+        flex-direction: column;
+        cursor: pointer;
+        gap: 5px;
+        width: 30px;
+        height: 25px;
+        justify-content: space-between;
+    }
+
+    .hamburger-menu div {
+        background-color: #4CAF50;
+        height: 5px;
+        width: 100%;
+        border-radius: 3px;
+    }
+
+    /* Основное меню */
+    nav ul {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        gap: 20px;
+    }
+
+    nav ul li {
+        padding: 10px;
+    }
+
+    nav ul li a {
+        text-decoration: none;
+        color: #4CAF50;
+        font-size: 1.1em;
+    }
+
+    nav ul li a:hover {
+        color: #45a049;
+    }
+
+    /* Скрытие меню на мобильных устройствах */
+    @media screen and (max-width: 768px) {
+        .navLinks {
+            display: none;
+        }
+        nav ul {
+            display: none; /* Скрываем меню по умолчанию */
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        nav ul.active {
+            display: flex; /* Показываем меню, когда класс active добавлен */
+        }
+
+        .hamburger-menu {
+            display: flex; /* Показываем гамбургер-меню */
+        }
+        .hamburger-menu.active{
+            position: right;
+        }
+
+        nav ul li {
+            padding: 10px;
+            width: 100%;
+            text-align: center;
+        }
+
+        nav ul li a {
+            font-size: 1.2em;
+        }
+        .campsites-container {
+            display: flex;
+            flex-wrap: wrap; /* Позволяет перенос элементов на следующую строку */
+            gap: 20px; /* Расстояние между карточками */
+            justify-content: center; /* Центруем карточки */
+        }
+
+        .campsites-container .card {
+            flex: 1 1 calc(50% - 20px); /* Карточка занимает 50% ширины минус отступы */
+            max-width: 300px; /* Максимальная ширина карточки */
+            min-width: 200px; /* Минимальная ширина карточки для адаптивности */
+            margin: 0 auto; /* Центрируем карточку, если она меньше доступной ширины */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Лёгкая тень для выделения */
+            border-radius: 8px; /* Закруглённые углы */
+            overflow: hidden;
+            /* background-color: #eedec7; Белый фон для контраста */
+        }
+
+        .campsites-container .card img {
+            width: 100%; /* Изображение растягивается по ширине карточки */
+            height: auto;
+            border-bottom: 1px solid #ccc; /* Лёгкое разделение изображения и текста */
+        }
+
+        .campsites-container .card h3 {
+            font-size: 1.2em;
+            margin: 10px;
+        }
+    }
+
+
+
+
+@media screen and (max-width: 768px) {
+    .map-calendar-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 20px;
+    }
+
+    .calendar-container {
+        width: 100%;
+        margin: 0;
+        padding: 10px;
+        box-shadow: none;
+    }
+
+    .right-content {
+        margin: 0;
+        padding: 10px;
+        width: 100%;
+    }
+
+    .calendar-section form {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .calendar-section .buttons-container {
+        flex-direction: column; /* Ставим кнопки вертикально */
+        gap: 10px;
+    }
+
+    table.calendar th, 
+    table.calendar td {
+        font-size: 12px;
+    }
+
+    .day-number {
+        font-size: 14px;
+    }
+
+    .calendar-navigation a {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+
+    .map-marker {
+        font-size: 0.9em;
+    }
+
+    .card {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .campsite-image {
+        width: 100%;
+        height: auto;
+    }
+}
+
+#contacts {
+    text-align: center;
+    padding: 40px 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+#contacts h2 {
+    font-size: 1.8em;
+    color: #4CAF50;
+    margin-bottom: 20px;
+}
+
+.contact-methods {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, background-color 0.3s;
+}
+
+.contact-item img {
+    width: 30px;
+    height: 30px;
+}
+
+.contact-item span {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+}
+
+.contact-item:hover {
+    background-color: #4CAF50;
+    transform: scale(1.05);
+    color: #ffffff;
+}
+
+.contact-item:hover span {
+    color: #ffffff;
+}
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="{% url 'campsite_list' %}">Серфстанция Волго</a></h1>
+        <nav>
+            <!-- Гамбургер-меню для мобильных устройств -->
+            <div class="hamburger-menu" id="hamburgerMenu">
+                <div style="background-color: #4CAF50; height: 5px;"></div>
+                <div style="background-color: #4CAF50; height: 5px;"></div>
+                <div style="background-color: #4CAF50; height: 5px;"></div>
+            </div>
+    
+            <!-- Ссылки в меню -->
+            <ul class= "navLinks" id="navLinks">
+                <li><a href="#campsite-list">Стоянки</a></li>
+                <li><a href="https://surfstationvolgo.ru/" target="_blank" rel="noopener noreferrer">О нас</a></li>
+                <li><a href="#contacts">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <script>
+            const bookedDatesPerCampsite = {{ booked_dates_per_campsite|safe }};
+        </script>
+
+        <div class="map-calendar-container">
+        <section class="map-section">
+            <h2>Карта нашего лагеря</h2>
+            <div class="map-container">
+                <img src="{% static 'media/camp-map.jpeg' %}" alt="Campsite Map" class="camp-map" id="camp-map">
+                {% for campsite in campsites %}
+                    <div class="map-marker"
+                        data-campsite-id="{{ campsite.id }}"
+                        data-top="{{ campsite.marker_latitude|floatformat:2 }}"
+                        data-left="{{ campsite.marker_longitude|floatformat:2 }}">
+                        {{ forloop.counter }}
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Контейнер календаря -->
+        <div class="calendar-container">
+            <div class="calendar-navigation">
+                <span class="current-month">{{ current_month_name }} {{ year }}</span>
+            </div>
+            <table class="calendar">
+                <thead>
+                    <tr>
+                        <th>Пн</th>
+                        <th>Вт</th>
+                        <th>Ср</th>
+                        <th>Чт</th>
+                        <th>Пт</th>
+                        <th>Сб</th>
+                        <th>Вс</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for week in month_days %}
+                        <tr>
+                            {% for day in week %}
+                                {% if day %}
+                                    <td class="{% if day in booked_dates %}booked{% else %}available{% endif %}" data-date="{{ day }}">
+                                        <span class="day-number">{{ day|slice:"8:10" }}</span>
+                                    </td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Форма фильтра -->
+    <section class="calendar-section">
+        <form id="dateFilterForm">
+            {% csrf_token %}
+            <label for="start_date">Дата начала:</label>
+            <input type="date" id="start_date" name="start_date" required>
+            <label for="end_date">Дата окончания:</label>
+            <input type="date" id="end_date" name="end_date" required>
+            <div class="buttons-container">
+                <button type="submit">Показать доступные</button>
+                <button type="button" id="resetFilterButton">Сбросить фильтр</button>
+            </div>
+        </form>
+    </section>
+
+        <section id="campsite-list">
+            <h2>Стоянки</h2>
+            <div id="campsites" class="campsites-container">
+                {% for campsite in campsites %}
+                    <a href="{% url 'campsite_detail' campsite.id %}" class="card-link" id="campsite-card-{{ campsite.id }}">
+                        <div class="card" data-name="{{ campsite.name }}">
+                            <h3 class="campsite-title">{{ campsite.name }}</h3>
+                            <img src="{{ campsite.image.url }}" alt="{{ campsite.name }}" class="campsite-image">
+                            <p class="campsite-description">{{ campsite.description|truncatewords:20 }}</p>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+        <section class = "contact" id="contacts">
+            <h2>Свяжитесь с нами</h2>
+            <div class="contact-methods">
+                <a href="https://t.me/Annafreed" target="_blank" class="contact-item">
+                    <i class="fab fa-telegram-plane"></i> <span>Telegram</span>
+                </a>
+                <a href="https://wa.me/+79255369018" target="_blank" class="contact-item">
+                    <i class="fab fa-whatsapp"></i> <span>WhatsApp</span>
+                </a>
+                <a href="https://www.instagram.com/windsurfing_seliger" target="_blank" class="contact-item">
+                    <i class="fab fa-instagram"></i> <span>Instagram</span>
+                </a>
+                <a href="tel:+79255369018" class="contact-item">
+                    <i class="fas fa-phone"></i> <span>+7 (925) 536-9018</span>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2024 Серфстанция Волго</p>
+    </footer>
+
+    <script>
+        $(document).ready(function () {
+            let selectedCampsiteId = null;
+            $('#hamburgerMenu').on('click', function () {
+                $('#navLinks').toggleClass('active'); // Добавляем/удаляем класс для отображения меню
+            });
+    
+            // Клик по маркеру на карте
+            function positionMarkers() {
+                const map = $('#camp-map');
+                const mapWidth = map.width();
+                const mapHeight = map.height();
+    
+                $('.map-marker').each(function () {
+                    const topPercent = parseFloat($(this).data('top'));
+                    const leftPercent = parseFloat($(this).data('left'));
+    
+                    if (!isNaN(topPercent) && !isNaN(leftPercent)) {
+                        const topPosition = topPercent * mapHeight;
+                        const leftPosition = leftPercent * mapWidth;
+    
+                        $(this).css({
+                            top: `${topPosition}px`,
+                            left: `${leftPosition}px`,
+                            position: 'absolute',
+                        }).show(); // Убедимся, что маркер видим
+                    } else {
+                        console.error(`Неверные данные для маркера: top=${topPercent}, left=${leftPercent}`);
+                    }
+                });
+            }
+    
+            // Вызываем функцию при загрузке страницы и изменении размеров окна
+            positionMarkers();
+            $(window).resize(positionMarkers);
+    
+            $('.map-marker').on('click', function () {
+                selectedCampsiteId = $(this).data('campsite-id');
+    
+                // Показываем информацию о выбранной стоянке
+                showCampsiteInfo(selectedCampsiteId);
+    
+                // Обновляем календарь
+                updateCalendar();
+            });
+    
+            // Показ информации о выбранной стоянке
+            function showCampsiteInfo(campsiteId) {
+                // Скрываем все карточки
+                $('.card-link').hide();
+    
+                // Показываем карточку с соответствующим ID
+                const campsiteCard = $(`#campsite-card-${campsiteId}`);
+                if (campsiteCard.length > 0) {
+                    campsiteCard.show();
+                } else {
+                    console.error(`Стоянка с ID "${campsiteId}" не найдена.`);
+                }
+            }
+    
+            // Обновление календаря для выбранной стоянки
+            function updateCalendar() {
+                if (!selectedCampsiteId) return;
+    
+                const bookedDates = bookedDatesPerCampsite[selectedCampsiteId] || [];
+                $('.calendar td').each(function () {
+                    const date = $(this).data('date');
+                    if (date) {
+                        if (bookedDates.includes(date)) {
+                            $(this).removeClass('available').addClass('booked');
+                        } else {
+                            $(this).removeClass('booked').addClass('available');
+                        }
+                    }
+                });
+            }
+    
+            // Обработка фильтрации стоянок
+            $('#dateFilterForm').on('submit', function (e) {
+                e.preventDefault();
+    
+                const startDate = $('#start_date').val();
+                const endDate = $('#end_date').val();
+    
+                if (!startDate || !endDate) {
+                    alert('Пожалуйста, выберите даты.');
+                    return;
+                }
+    
+                // Отправляем запрос на сервер
+                $.ajax({
+                    url: '/filter-campsites/', // Замените на реальный URL
+                    type: 'POST',
+                    data: {
+                        start_date: startDate,
+                        end_date: endDate,
+                        csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val()
+                    },
+                    success: function (response) {
+                        updateCampsites(response.available); // Обновляем список стоянок
+                    },
+                    error: function (error) {
+                        console.error('Ошибка фильтрации:', error);
+                        alert('Произошла ошибка. Попробуйте снова.');
+                    }
+                });
+            });
+    
+            // Обновление списка доступных стоянок после фильтрации
+            function updateCampsites(availableCampsites) {
+                const campsitesContainer = $('#campsites');
+                campsitesContainer.empty();
+    
+                if (availableCampsites.length === 0) {
+                    campsitesContainer.append('<p>Нет доступных стоянок на выбранные даты.</p>');
+                    return;
+                }
+    
+                availableCampsites.forEach(campsite => {
+                    campsitesContainer.append(
+                        `<a href="/campsite/${campsite.id}/" class="card-link" id="campsite-card-${campsite.id}">
+                            <div class="card">
+                                <h3 class="campsite-title">${campsite.name}</h3>
+                                <img src="${campsite.image}" alt="${campsite.name}" class="campsite-image">
+                                <p class="campsite-description">${campsite.description}</p>
+                            </div>
+                        </a>`
+                    );
+                });
+            }
+    
+            // Обработчик для сброса фильтра
+            $('#resetFilterButton').on('click', function (e) {
+                e.preventDefault(); // Предотвращаем стандартное поведение кнопки
+                $('#start_date').val(''); // Очистить поле начала
+                $('#end_date').val(''); // Очистить поле окончания
+                location.reload(); // Перезагружаем страницу, возвращая ее в первоначальное состояние
+            });
+        });
+    </script>
+    
+    </body>
+</html>

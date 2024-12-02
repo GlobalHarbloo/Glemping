@@ -1,0 +1,122 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ campsite.name }} - Детали</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{% static 'bookings/styles.css' %}">
+
+    <style>
+    
+
+.hamburger-menu {
+        display: none;
+        flex-direction: column;
+        cursor: pointer;
+        gap: 5px;
+        width: 30px;
+        height: 25px;
+        justify-content: space-between;
+    }
+
+    .hamburger-menu div {
+        background-color: #4CAF50;
+        height: 5px;
+        width: 100%;
+        border-radius: 3px;
+    }
+
+    /* Основное меню */
+    nav ul {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        gap: 20px;
+    }
+
+    nav ul li {
+        padding: 10px;
+    }
+
+    nav ul li a {
+        text-decoration: none;
+        color: #4CAF50;
+        font-size: 1.1em;
+    }
+
+    nav ul li a:hover {
+        color: #45a049;
+    }
+
+    /* Скрытие меню на мобильных устройствах */
+    @media screen and (max-width: 768px) {
+        .navLinks {
+            display: none;
+        }
+        nav ul {
+            display: none; /* Скрываем меню по умолчанию */
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        nav ul.active {
+            display: flex; /* Показываем меню, когда класс active добавлен */
+        }
+
+        .hamburger-menu {
+            display: flex; /* Показываем гамбургер-меню */
+        }
+        .hamburger-menu.active{
+            position: right;
+        }
+
+        nav ul li {
+            padding: 10px;
+            width: 100%;
+            text-align: center;
+        }
+
+        nav ul li a {
+            font-size: 1.2em;
+        }
+    }
+
+
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="{% url 'campsite_list' %}">Серфстанция Волго</a></h1>
+
+        <nav>
+        <div class="hamburger-menu" id="hamburgerMenu">
+            <div style="background-color: #4CAF50; height: 5px;"></div>
+            <div style="background-color: #4CAF50; height: 5px;"></div>
+            <div style="background-color: #4CAF50; height: 5px;"></div>
+        </div>
+
+        <!-- Ссылки в меню -->
+        <ul class= "navLinks" id="navLinks">
+                <li><a href="{% url 'campsite_list' %}">Главная</a></li>
+                <li><a href="https://surfstationvolgo.ru/" target="_blank" rel="noopener noreferrer">О нас</a></li>
+                <li><a href="{% url 'contact' %}">Контакты</a></li>
+                <li><a href="{% url 'services' %}">Услуги</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Серфстанция Волго</p>
+    </footer>
+</body>
+</html>
