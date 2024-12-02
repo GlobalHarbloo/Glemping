@@ -90,19 +90,13 @@ main {
 }
 
 /* Карточки кемпинга */
-
-.campsites-container {
-    display: flex;
-    flex-wrap: wrap; /* Переносить карточки на новую строку, если они не помещаются */
-    gap: 20px; /* Расстояние между карточками */
-    justify-content: center; /* Центрировать карточки */
-    padding: 20px;
-}
-
+.campsites-container,
 .campsite-cards {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
+    justify-content: center;
+    padding: 20px;
 }
 
 .card {
@@ -132,7 +126,6 @@ main {
     color: #3c3c3c;
 }
 
-
 /* Подвал сайта */
 footer {
     text-align: center;
@@ -143,119 +136,10 @@ footer {
     border-top: 2px solid #a6927d;
 }
 
-/* Стили для страницы деталей о стоянках */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Courier New', Courier, monospace;
-    color: #2c2c2c;
-    background-color: #f4efe6;
-}
-
-/* Заголовок и меню */
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    background-color: #d2c7b6;
-    border-bottom: 2px solid #a6927d;
-}
-
-header h1 {
-    font-size: 28px;
-    font-weight: bold;
-    color: #3c3c3c;
-}
-
-header nav ul {
-    display: flex;
-    list-style-type: none;
-}
-
-header nav ul li {
-    margin: 0 15px;
-}
-
-header nav ul li a {
-    color: #3c3c3c;
-    text-decoration: none;
-    font-size: 18px;
-    transition: color 0.3s;
-}
-
-header nav ul li a:hover {
-    color: #a6927d;
-}
-
-/* Основной контент */
-main {
-    padding: 20px;
-}
-
-/* Стиль для страницы с деталями стоянки */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Courier New', Courier, monospace;
-    color: #2c2c2c;
-    background-color: #f4efe6;
-}
-
-/* Заголовок и меню */
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    background-color: #d2c7b6;
-    border-bottom: 2px solid #a6927d;
-}
-
-header h1 {
-    font-size: 2vw;  /* Используем vw для адаптивного размера */
-    font-weight: bold;
-    color: #3c3c3c;
-}
-
-/* Навигационное меню */
-header nav ul {
-    display: flex;
-    list-style-type: none;
-}
-
-header nav ul li {
-    margin: 0 15px;
-}
-
-header nav ul li a {
-    color: #3c3c3c;
-    text-decoration: none;
-    font-size: 1.5vw;  
-    transition: color 0.3s;
-}
-
-header nav ul li a:hover {
-    color: #a6927d;
-}
-
-/* Основной контент */
-main {
-    padding: 20px;
-}
-
 /* Стиль для страницы с деталями стоянки */
 .campsite-details h1 {
     text-align: center;
-    font-size: 2.5vw;  
+    font-size: 2.5vw;
     color: #3c3c3c;
     margin-bottom: 20px;
 }
@@ -269,7 +153,7 @@ main {
 
 /* Основное изображение */
 .campsite-main-image {
-    text-align: center; 
+    text-align: center;
     margin-bottom: 20px;
 }
 
@@ -284,16 +168,16 @@ main {
 /* Галерея изображений */
 .gallery {
     display: flex;
-    flex-wrap: nowrap;  /* Обеспечивает один ряд */
+    flex-wrap: nowrap;
     gap: 10px;
     margin-bottom: 30px;
-    overflow-x: auto; 
+    overflow-x: auto;
     padding-bottom: 10px;
 }
 
 .gallery img {
     width: auto;
-    max-height: 200px; 
+    max-height: 200px;
     border-radius: 8px;
     transition: transform 0.3s;
 }
@@ -372,18 +256,6 @@ main {
     color: green;
 }
 
-/* Подвал сайта */
-footer {
-    text-align: center;
-    padding: 20px;
-    background-color: #d2c7b6;
-    color: #3c3c3c;
-    margin-top: 20px;
-    border-top: 2px solid #a6927d;
-}
-
-
-
 /* Медиазапросы для адаптивности */
 @media (max-width: 768px) {
     header h1 {
@@ -435,5 +307,3 @@ footer {
     }
 }
 
-/* Стили для календаря */
-/* Общий стиль страницы */

@@ -1,0 +1,131 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ campsite.name }} - Детали</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{% static 'bookings/styles.css' %}">
+
+    <style>
+    
+
+.hamburger-menu {
+        display: none;
+        flex-direction: column;
+        cursor: pointer;
+        gap: 5px;
+        width: 30px;
+        height: 25px;
+        justify-content: space-between;
+    }
+
+    .hamburger-menu div {
+        background-color: #4CAF50;
+        height: 5px;
+        width: 100%;
+        border-radius: 3px;
+    }
+
+    /* Основное меню */
+    nav ul {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        gap: 20px;
+    }
+
+    nav ul li {
+        padding: 10px;
+    }
+
+    nav ul li a {
+        text-decoration: none;
+        color: #4CAF50;
+        font-size: 1.1em;
+    }
+
+    nav ul li a:hover {
+        color: #45a049;
+    }
+
+    /* Скрытие меню на мобильных устройствах */
+    @media screen and (max-width: 768px) {
+        .navLinks {
+            display: none;
+        }
+        nav ul {
+            display: none; /* Скрываем меню по умолчанию */
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        nav ul.active {
+            display: flex; /* Показываем меню, когда класс active добавлен */
+        }
+
+        .hamburger-menu {
+            display: flex; /* Показываем гамбургер-меню */
+        }
+        .hamburger-menu.active{
+            position: right;
+        }
+
+        nav ul li {
+            padding: 10px;
+            width: 100%;
+            text-align: center;
+        }
+
+        nav ul li a {
+            font-size: 1.2em;
+        }
+    }
+
+
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="{% url 'campsite_list' %}">Серфстанция Волго</a></h1>
+
+        <nav>
+        <div class="hamburger-menu" id="hamburgerMenu">
+            <div style="background-color: #4CAF50; height: 5px;"></div>
+            <div style="background-color: #4CAF50; height: 5px;"></div>
+            <div style="background-color: #4CAF50; height: 5px;"></div>
+        </div>
+
+        <!-- Ссылки в меню -->
+        <ul class= "navLinks" id="navLinks">
+                <li><a href="{% url 'campsite_list' %}">Главная</a></li>
+                <li><a href="https://surfstationvolgo.ru/" target="_blank" rel="noopener noreferrer">О нас</a></li>
+                <li><a href="{% url 'contact' %}">Контакты</a></li>
+                <li><a href="{% url 'services' %}">Услуги</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <p>
+            Станция была создана группой энтузиастов продвигавших виндсерфинг в массы в далеких 90-х годах. Именно тогда на берега верхневолжья были завезены доски «мустанг», «виндгляйдер», «фаворит», дакроновые паруса, и расклеена реклама по институтам г. Москвы, предлагающая студентам опробовать свои силы в так называемом – виндсерфинге. В это же время был создан спортивно – туристический лагерь с инфраструктурой в виде палаток, кухни, столовой, развлекательных площадок, туалетов и прочих прелестей.
+
+Со временем количество желающих экзотики - паруса и доски становилось все больше и больше, и серфлагерь стал излюбленным местом отдыха для многих замечательных людей, которые приезжают сюда не только для занятий виндсерфингом, но и просто провести время в хорошей компании. Небо голубое, сосны великаны, цветочные поляны, песни у костра, романтичные закаты и рассветы не оставят равнодушными даже самых искушенных путешественников и любителей природы.
+
+Серфлагерь расположен в лесу на берегу оз.Волго, которое входит в систему Селигерских озер. Станция оборудована матчастью - North Sails, NeilPryde, Fanatic, JP и др. Каждый день для всех желающих проводится бесплатный инструктаж, включающий основы базового курса виндсерфинга. На станции работают опытные инструкторы, готовые всегда помочь в освоении виндсерфинга, как взрослым, так и маленьким будущим серферам. В 2011 году станция дополнительно закупила детские комплекты оборудования, и теперь готова обучать детей в возрасте от 5-ти лет.
+
+На досуге можно попробовать свои силы в волейболе, в настольном теннисе, бадминтоне, в прогулках на байдарках или на тех же самых досках, только с вёслами, в головокружительных полётах на тарзанках, в ночных дискотеках, в песенных вечерах у костра, посетить достопримечательности Верхневолжья, такие как: Нилова Пустынь, Исток Волги, Оковецкий Ключ и др.
+        </p>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Серфстанция Волго</p>
+    </footer>
+</body>
+</html>

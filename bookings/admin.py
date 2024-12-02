@@ -45,6 +45,7 @@ class CampsiteAdmin(admin.ModelAdmin):
             'fields': ('name', 'description', 'image', 'marker_latitude', 'marker_longitude'),
         }),
     )
+    inlines = [CampsiteImageInline]
 
     # Картинка маркера и карта отображаются в админке
     def render_change_form(self, request, context, *args, **kwargs):

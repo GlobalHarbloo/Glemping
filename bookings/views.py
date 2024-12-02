@@ -10,6 +10,16 @@ from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 import calendar
 from datetime import date, timedelta
+import requests
+
+def send_to_telegram(message):
+    url = f'https://api.telegram.org/bot8115788038:AAG4d6GY1-fSr9Y3lTPEVJpZKCaIo4s4VfA/sendMessage'
+    params = {
+        'chat_id': -4740428960,
+        'text': message
+    }
+    response = requests.post(url, data=params)
+    return response
 
 def index(request):
     campsites = Campsite.objects.all()
@@ -161,16 +171,32 @@ def create_booking(request, campsite_id):
             special_requests=special_requests,  # необязательное текстовое поле
             include_meals=include_meals  
         )
+        message = f"""
+        Новый запрос на бронирование:
+        Имя: {customer_name}
+        Email: {customer_email}
+        Телефон: {customer_number}
+        Дата начала: {start_date}
+        Дата окончания: {end_date}
+        Комментарии: {special_requests}
+        Включить питание: {include_meals}
+        """
+        
+        
 
         try:
             # Валидация перед сохранением
             new_booking.clean()  #  проверка пересечения дат
             new_booking.save()  # Если всё хорошо, сохраняем бронирование
+            # Отправляем сообщение в Telegram
+            send_to_telegram(message)
             return JsonResponse({"message": "Бронирование успешно создано!"})
         except ValidationError as e:
             # Извлекаем только текст ошибки из ValidationError и возвращаем его
             error_message = " ".join(e.messages)
             return JsonResponse({"error": error_message}, status=400)
+        
+        
 
     # Возвращаем форму для бронирования, если запрос не POST
     return render(request, 'bookings/create_booking.html', {'campsite': campsite})
@@ -192,14 +218,14 @@ def campsite_data(request):
 
 
 def about_us(request):
-    return render(request, 'about_us.html')
+    return render(request, 'bookings/about_us.html')
 
 def contact(request):
-    return render(request, 'contact.html')  
+    return render(request, 'bookings/contact.html')  
 
 
 def services(request):
-    return render(request, 'services.html')
+    return render(request, 'bookings/services.html')
 
 @csrf_exempt  # Если используете стандартный CSRF-токен, удалите эту строку
 def filter_campsites(request):

@@ -31,6 +31,7 @@ class Booking(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Ожидает'),
         ('confirmed', 'Подтверждено'),
+        ('paid', 'Оплачено'),
     ]
     
     campsite = models.ForeignKey(Campsite, on_delete=models.CASCADE, related_name='bookings')
@@ -63,7 +64,4 @@ class Booking(models.Model):
         # Проверка на корректность дат
         if self.start_date >= self.end_date:
             raise ValidationError("Дата окончания бронирования должна быть позже даты начала.")
-        
-        if self.start_date < datetime.date.today():
-            raise ValidationError("Нельзя бронировать стоянку на прошедшие даты.")
         
